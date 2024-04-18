@@ -20,13 +20,13 @@ class FrameDataViewModel(
     private val frameDao: FrameDao,
     private val gameDao: GameDao
 ): ViewModel() {
-    var gameState by mutableStateOf(GameDataState())
+    var gameState by mutableStateOf(GameDataTable())
         private set
     var state by mutableStateOf(FrameDataTable())
         private set
     var listOfData = mutableStateListOf<FrameDataTable>()
         private set
-    var listOfGames = mutableStateListOf<Pair<GameDataState, Int>>()
+    var listOfGames = mutableStateListOf<GameDataTable>()
         private set
 
     var strikePercent: MutableState<Double> = mutableStateOf(0.0)
@@ -41,32 +41,10 @@ class FrameDataViewModel(
     private fun fillInitalList() {
         viewModelScope.launch() {
             frameDao.getAllData().first().forEach {
-                listOfData.add(
-                    /*FrameDataState(
-                        pin1 = it.pin1,
-                        pin2 = it.pin2,
-                        pin3 = it.pin3,
-                        pin4 = it.pin4,
-                        pin5 = it.pin5,
-                        pin6 = it.pin6,
-                        pin7 = it.pin7,
-                        pin8 = it.pin8,
-                        pin9 = it.pin9,
-                        pin10 = it.pin10,
-                        strike = it.strike,
-                        spare = it.spare,
-                        date = it.date,
-                        id = it.id)*/
-                    it
-                )
+                listOfData.add(it)
             }
             gameDao.getAllData().first().forEach {
-                listOfGames.add(
-                    Pair(
-                        GameDataState(gameValue = it.gameValue),
-                        it.occurences
-                    )
-                )
+                listOfGames.add(it)
             }
             setStatistics()
         }
@@ -76,24 +54,16 @@ class FrameDataViewModel(
         listOfData.clear()
         viewModelScope.launch() {
             frameDao.getAllData().first().forEach {
-                listOfData.add(
-                    /*FrameDataState(
-                        pin1 = it.pin1,
-                        pin2 = it.pin2,
-                        pin3 = it.pin3,
-                        pin4 = it.pin4,
-                        pin5 = it.pin5,
-                        pin6 = it.pin6,
-                        pin7 = it.pin7,
-                        pin8 = it.pin8,
-                        pin9 = it.pin9,
-                        pin10 = it.pin10,
-                        strike = it.strike,
-                        spare = it.spare,
-                        date = it.date,
-                        id = it.id)*/
-                it
-                )
+                listOfData.add(it)
+            }
+        }
+    }
+
+    private fun updateGameList() {
+        listOfGames.clear()
+        viewModelScope.launch() {
+            gameDao.getAllData().first().forEach {
+                listOfGames.add(it)
             }
         }
     }
@@ -105,6 +75,7 @@ class FrameDataViewModel(
             is FrameLoggerActions.Enter -> enterTapped()
             is FrameLoggerActions.EnterGame -> enterGame(actions.gameScore)
             is FrameLoggerActions.DeleteLog -> deleteLog(actions.frame)
+            is FrameLoggerActions.DeleteGame -> deleteGame(actions.game)
         }
     }
     private fun enterTapped() {
@@ -155,25 +126,6 @@ class FrameDataViewModel(
         state = FrameDataTable()
     }
 
-    private fun syncNewFrame(frame: FrameDataTable): FrameDataState {
-        return FrameDataState(
-            pin1 = frame.pin1,
-            pin2 = frame.pin2,
-            pin3 = frame.pin3,
-            pin4 = frame.pin4,
-            pin5 = frame.pin5,
-            pin6 = frame.pin6,
-            pin7 = frame.pin7,
-            pin8 = frame.pin8,
-            pin9 = frame.pin9,
-            pin10 = frame.pin10,
-            strike = frame.strike,
-            spare = frame.spare,
-            date = frame.date,
-            id = frame.id
-        )
-    }
-
     private fun deleteLog(frame: FrameDataTable) {
         if (listOfData.contains(frame)) {
             println("Deleting: " + listOfData.indexOf(frame))
@@ -181,7 +133,6 @@ class FrameDataViewModel(
             println("NumberOfEntry: " + listOfData.count())
             viewModelScope.launch {
                 frameDao.deleteFrame(frame)
-                //getMatchingDataEntry(frame)
                 updateFrameList()
                 setStatistics()
             }
@@ -244,7 +195,7 @@ class FrameDataViewModel(
         var totalStrikes = 0
         var totalOpens = 0
         var totalPinFall = 0
-        var numberOfGames = 0
+        var numberOfGames = listOfGames.count()
         listOfData.forEach {
             if (it.spare) {
                 totalSpares++
@@ -256,12 +207,11 @@ class FrameDataViewModel(
         }
 
         listOfGames.forEach {
-            numberOfGames += it.second
-            totalPinFall += (it.second * it.first.gameValue)
+            totalPinFall += it.gameValue
         }
 
         if (numberOfGames > 0) {
-            averageGame.value = (totalPinFall.toDouble()/numberOfGames.toDouble())
+            averageGame.value = totalPinFall.toDouble() / numberOfGames.toDouble()
         } else {
             averageGame.value = 0.0
         }
@@ -276,88 +226,26 @@ class FrameDataViewModel(
         }
     }
 
-    private suspend fun getMatchingDataEntry(frame: FrameDataTable) {
-        /*var deleteFrame: FrameDataTable = FrameDataTable(
-            pin1 = frame.pin1,
-            pin2 = frame.pin2,
-            pin3 = frame.pin3,
-            pin4 = frame.pin4,
-            pin5 = frame.pin5,
-            pin6 = frame.pin6,
-            pin7 = frame.pin7,
-            pin8 = frame.pin8,
-            pin9 = frame.pin9,
-            pin10 = frame.pin10,
-            strike = frame.strike,
-            spare = frame.spare,
-            date = frame.date,
-            id = frame.id
-        )*/
-        frameDao.deleteFrame(frame)
-    }
-
-    private fun createNewDataEntry(data: FrameDataState): FrameDataTable {
-        return FrameDataTable(
-            pin1 = data.pin1,
-            pin2 = data.pin2,
-            pin3 = data.pin3,
-            pin4 = data.pin4,
-            pin5 = data.pin5,
-            pin6 = data.pin6,
-            pin7 = data.pin7,
-            pin8 = data.pin8,
-            pin9 = data.pin9,
-            pin10 = data.pin10,
-            strike = data.strike,
-            spare = data.spare,
-            date = data.date
-        )
-    }
-
     private fun enterGame(gameScore: Int) {
-        var updatedVal = false
-        var gameData = GameDataTable()
-        for (it in listOfGames) {
-            if (it.first.gameValue == gameScore) {
-                val newVal = it.copy(second = it.second + 1)
-                gameData.gameValue = newVal.first.gameValue
-                gameData.occurences = newVal.second
-                listOfGames.add(newVal)
-                listOfGames.remove(it)
-                updatedVal = true
-                break
-            }
-        }
-
-        if (!updatedVal) {
-            listOfGames.add(Pair(GameDataState(gameScore), 1))
-            gameData = GameDataTable(gameScore, 1)
-        }
-
-        var totalGames: Double = 0.0
-        var totalPinFall: Double = 0.0
-        for (it in listOfGames) {
-            totalPinFall += it.first.gameValue
-            totalGames += it.second
-        }
+        var gameData = GameDataTable(gameScore)
+        listOfGames.add(gameData)
 
         //Update Database
         viewModelScope.launch {
-            if (gameData.occurences > 1) {
-                getMatchingGameDataEntry(gameData, gameDao.getAllData().first())
-            }
             gameDao.insertGame(gameData)
             println(gameDao.getAllData().first())
         }
 
-        averageGame.value = (totalPinFall / totalGames)
-        gameState = GameDataState()
+        setStatistics()
+        gameState = GameDataTable()
     }
 
-    suspend fun getMatchingGameDataEntry(data: GameDataTable, table: List<GameDataTable>) {
-        table.forEach {
-            if (it.gameValue == data.gameValue) {
-                gameDao.deleteGame(it)
+    private fun deleteGame(game: GameDataTable) {
+        if (listOfGames.contains(game)) {
+            viewModelScope.launch {
+                gameDao.deleteGame(game)
+                updateGameList()
+                setStatistics()
             }
         }
     }

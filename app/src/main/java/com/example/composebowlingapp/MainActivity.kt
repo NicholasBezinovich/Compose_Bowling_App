@@ -85,6 +85,7 @@ class MainActivity : ComponentActivity() {
                 val state = viewModel.state
                 val gameState = viewModel.gameState
                 val frameDataListState = viewModel.listOfData
+                val gameDataListState = viewModel.listOfGames
 
                 Box(modifier = Modifier
                     .fillMaxSize()
@@ -104,8 +105,8 @@ class MainActivity : ComponentActivity() {
                             averageScore = viewModel.averageGame.value
                         )
                         QuickFrameLogSection(state = state, onAction = viewModel::onAction)
-                        QuickGameScoreLogged(gameState = gameState, onAction = viewModel::onAction)
-                        FramesLoggedList(list = frameDataListState, onAction = viewModel::onAction)
+                        QuickGameScoreLogged(onAction = viewModel::onAction)
+                        FramesLoggedList(frameList = frameDataListState, gameList = gameDataListState, onAction = viewModel::onAction)
                     }
                 }
             }
@@ -840,7 +841,7 @@ fun QuickFrameLogSection(state: FrameDataTable, onAction: (FrameLoggerActions) -
 }
 
 @Composable
-fun QuickGameScoreLogged(gameState: GameDataState, onAction: (FrameLoggerActions) -> Unit) {
+fun QuickGameScoreLogged(onAction: (FrameLoggerActions) -> Unit) {
     var scoreText = remember {mutableStateOf("")}
 
     Box(modifier = Modifier
@@ -904,19 +905,19 @@ fun QuickGameScoreLogged(gameState: GameDataState, onAction: (FrameLoggerActions
 }
 
 @Composable
-fun FramesLoggedList(list: List<FrameDataTable>, onAction: (FrameLoggerActions) -> Unit = {}) {
+fun FramesLoggedList(frameList: List<FrameDataTable>, gameList: List<GameDataTable>, onAction: (FrameLoggerActions) -> Unit = {}) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color.LightGray)
     ) {
         Column {
             Text(
-                text = "Recently Logged",
+                text = "Recently Logged Frames",
                 modifier = Modifier
                     .padding(15.dp, 15.dp, 15.dp, 10.dp)
             )
             Column {
-                list.reversed().forEach {
+                frameList.reversed().forEach {
                     Card(
                         modifier = Modifier
                             .padding(15.dp, 0.dp, 15.dp, 15.dp)
@@ -929,7 +930,9 @@ fun FramesLoggedList(list: List<FrameDataTable>, onAction: (FrameLoggerActions) 
                             modifier = Modifier
                                 .padding(15.dp, 15.dp, 15.dp, 15.dp)
                         ) {
-                            Column {
+                            Column(modifier = Modifier
+                                .weight(1f))
+                            {
                                 if (it.strike) {
                                     Text(
                                         text = "Strike",
@@ -953,16 +956,6 @@ fun FramesLoggedList(list: List<FrameDataTable>, onAction: (FrameLoggerActions) 
                                     LogPinsLeft(it)
                                 }
                             }
-                            Text(
-                                text = "N/A",
-                                modifier = Modifier
-                                    .align(CenterVertically)
-                            )
-
-                            Spacer(
-                                modifier = Modifier
-                                    .weight(1f)
-                            )
                             Column(modifier = Modifier
                                 .weight(1f))
                             {
@@ -982,6 +975,63 @@ fun FramesLoggedList(list: List<FrameDataTable>, onAction: (FrameLoggerActions) 
                                     onClick =
                                     {
                                         onAction(FrameLoggerActions.DeleteLog(it))
+                                    }
+                                ) {
+                                    Text(
+                                        "Delete",
+                                        color = Color.White,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Text(
+                text = "Recently Logged Games",
+                modifier = Modifier
+                    .padding(15.dp, 15.dp, 15.dp, 10.dp)
+            )
+            Column {
+                gameList.reversed().forEach {
+                    Card(
+                        modifier = Modifier
+                            .padding(15.dp, 0.dp, 15.dp, 15.dp)
+                            .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
+                            .height(150.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        elevation = 15.dp
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(15.dp, 15.dp, 15.dp, 15.dp)
+                        ) {
+                            Column(modifier = Modifier
+                                .weight(1f))
+                            {
+                                Row()
+                                {
+                                    Text(
+                                        text = it.gameValue.toString(),
+                                        modifier = Modifier
+                                            .padding(15.dp, 15.dp, 15.dp, 10.dp)
+                                    )
+                                }
+                            }
+                            Column(modifier = Modifier
+                                .weight(1f))
+                            {
+                                TextButton(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(CircleShape)
+                                        .background(Color.DarkGray)
+                                        .width(100.dp)
+                                        .align(CenterHorizontally),
+                                    onClick =
+                                    {
+                                        onAction(FrameLoggerActions.DeleteGame(it))
                                     }
                                 ) {
                                     Text(
@@ -1072,6 +1122,8 @@ fun DefaultPreview() {
         //val gameState = viewModel.gameState
         var frameDataList = mutableListOf<FrameDataTable>()
         frameDataList.add(FrameDataTable())
+
+        var gameDateList = mutableListOf<GameDataTable>()
         Box(modifier = Modifier
             .fillMaxSize()
         ) {
@@ -1090,7 +1142,7 @@ fun DefaultPreview() {
                 )
                 //QuickFrameLogSection(state = state, onAction = viewModel::onAction)
                 //QuickGameScoreLogged(gameState = gameState, onAction = viewModel::onAction)
-                FramesLoggedList(list = frameDataList)
+                FramesLoggedList(frameList = frameDataList, gameList = gameDateList)
             }
         }
     }
