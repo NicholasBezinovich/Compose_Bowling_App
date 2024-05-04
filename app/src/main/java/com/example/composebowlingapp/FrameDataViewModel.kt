@@ -52,9 +52,12 @@ class FrameDataViewModel(
 
     private fun updateFrameList() {
         listOfData.clear()
+        print("Print: After removing all data")
+        print("Print: " + listOfData.count())
         viewModelScope.launch() {
             frameDao.getAllData().first().forEach {
                 listOfData.add(it)
+                setStatistics()
             }
         }
     }
@@ -64,6 +67,7 @@ class FrameDataViewModel(
         viewModelScope.launch() {
             gameDao.getAllData().first().forEach {
                 listOfGames.add(it)
+                setStatistics()
             }
         }
     }
@@ -117,12 +121,10 @@ class FrameDataViewModel(
         viewModelScope.launch {
             //Get date info on frame data to re add late
             frameDao.insertFrame(frameData)
-
-            //updateFrameList()
             println(frameDao.getAllData().first())
+            updateFrameList()
+            setStatistics()
         }
-        listOfData.add(frameData)
-        setStatistics()
         state = FrameDataTable()
     }
 
@@ -131,9 +133,13 @@ class FrameDataViewModel(
             println("Deleting: " + listOfData.indexOf(frame))
             val index = listOfData.indexOf(frame)
             println("NumberOfEntry: " + listOfData.count())
+            listOfData.remove(frame)
             viewModelScope.launch {
-                frameDao.deleteFrame(frame)
-                updateFrameList()
+                println("Print Before Delete: " + frameDao.getAllData().first().count())
+                var copyDaoList = frameDao.getAllData().first()
+                var copyDaoFrame = copyDaoList.first { it.id == frame.id }
+                frameDao.deleteFrame(frameDao.getAllData().first().first { it.id == frame.id})
+                println("Print After Delete: " + frameDao.getAllData().first().count())
                 setStatistics()
             }
         }
@@ -228,23 +234,22 @@ class FrameDataViewModel(
 
     private fun enterGame(gameScore: Int) {
         var gameData = GameDataTable(gameScore)
-        listOfGames.add(gameData)
 
         //Update Database
         viewModelScope.launch {
             gameDao.insertGame(gameData)
             println(gameDao.getAllData().first())
+            updateGameList()
         }
 
-        setStatistics()
         gameState = GameDataTable()
     }
 
     private fun deleteGame(game: GameDataTable) {
         if (listOfGames.contains(game)) {
+            listOfGames.remove(game)
             viewModelScope.launch {
                 gameDao.deleteGame(game)
-                updateGameList()
                 setStatistics()
             }
         }
