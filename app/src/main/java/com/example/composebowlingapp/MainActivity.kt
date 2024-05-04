@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
                             .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        DateFilter()
+                        DateFilter(onAction = viewModel::onAction)
                         StatsSection(
                             strikePercent = viewModel.strikePercent.value,
                             sparePercent = viewModel.sparePercent.value,
@@ -115,7 +115,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun DateFilter() {
+fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color.LightGray)
@@ -136,25 +136,53 @@ fun DateFilter() {
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        Box(
+                        TextButton(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .weight(1f)
-                                .border(1.dp, Color.Black)
+                                .background(Color.DarkGray)
+                                .align(CenterVertically)
+                                .weight(1f),
+                            onClick =
+                            {
+                                println("Today was Tapped")
+                            }
                         ) {
-                            Text(
-                                text = "Filter", modifier = Modifier.align(Center)
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxSize()
+                            ) {
+                                Text(
+                                    "Filter",
+                                    color = Color.White,
+                                    fontSize = 15.sp,
+                                    modifier = Modifier
+                                        .align(Center)
+                                )
+                            }
                         }
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxSize()
-                        ) {
-                            Text(
-                                text = "Today", modifier = Modifier
-                                    .align(Center)
-                            )
+                        TextButton(
+                                modifier = Modifier
+                                    .background(Color.DarkGray)
+                                    .align(CenterVertically)
+                                    .weight(1f),
+                                onClick =
+                                {
+                                    println("Today was Tapped")
+                                }
+                            ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxSize()
+                            ) {
+                                Text(
+                                    "Today",
+                                    color = Color.White,
+                                    fontSize = 15.sp,
+                                    modifier = Modifier
+                                        .align(Center)
+                                )
+                            }
                         }
                     }
                 }
@@ -1133,7 +1161,7 @@ fun DefaultPreview() {
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                DateFilter()
+                //DateFilter()
                 StatsSection(
                     strikePercent = 0.0,
                     sparePercent = 0.0,
