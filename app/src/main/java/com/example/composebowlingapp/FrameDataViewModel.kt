@@ -30,7 +30,8 @@ class FrameDataViewModel(
         private set
     var listOfGames = mutableStateListOf<GameDataTable>()
         private set
-    var dateType = DateType.TODAY
+    var dateType = mutableStateOf(DateType.TODAY)
+        //DateType.TODAY
         private set
 
     var strikePercent: MutableState<Double> = mutableStateOf(0.0)
@@ -89,10 +90,10 @@ class FrameDataViewModel(
     }
 
     private fun dateSelected(selected: DateType) {
-        dateType = selected
-        if (dateType == DateType.TODAY) {
+        dateType.value = selected
+        if (dateType.value == DateType.TODAY) {
             println("Today was tapped")
-        } else if (dateType == DateType.ALL) {
+        } else if (dateType.value == DateType.ALL) {
             println("All was tapped")
         } else {
             println("Ranged Filter was tapped")
@@ -100,7 +101,7 @@ class FrameDataViewModel(
     }
 
     fun getFilteredList() : List<FrameDataTable> {
-        when (dateType) {
+        when (dateType.value) {
             DateType.TODAY -> {
                 return listOfData.filter {
                     it.date == LocalDate.now().toString()
