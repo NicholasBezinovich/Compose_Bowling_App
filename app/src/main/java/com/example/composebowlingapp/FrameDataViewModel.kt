@@ -91,13 +91,7 @@ class FrameDataViewModel(
 
     private fun dateSelected(selected: DateType) {
         dateType.value = selected
-        if (dateType.value == DateType.TODAY) {
-            println("Today was tapped")
-        } else if (dateType.value == DateType.ALL) {
-            println("All was tapped")
-        } else {
-            println("Ranged Filter was tapped")
-        }
+        setStatistics()
     }
 
     fun getFilteredList() : List<FrameDataTable> {
@@ -230,13 +224,13 @@ class FrameDataViewModel(
 
     private fun setStatistics() {
         //Get statistics values
-        var totalEntries = listOfData.count()
+        var totalEntries = getFilteredList().count()
         var totalSpares = 0
         var totalStrikes = 0
         var totalOpens = 0
         var totalPinFall = 0
         var numberOfGames = listOfGames.count()
-        listOfData.forEach {
+        getFilteredList().forEach {
             if (it.spare) {
                 totalSpares++
             } else if (it.strike) {

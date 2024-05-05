@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -71,6 +73,9 @@ fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
                                 )
                             }
                         }
+                        Divider(
+                            modifier = Modifier.width(1.dp)
+                        )
                         TextButton(
                             modifier = Modifier
                                 .background(Color.DarkGray)
@@ -94,6 +99,9 @@ fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
                                 )
                             }
                         }
+                        Divider(
+                            modifier = Modifier.width(1.dp)
+                        )
                         TextButton(
                             modifier = Modifier
                                 .background(Color.DarkGray)
