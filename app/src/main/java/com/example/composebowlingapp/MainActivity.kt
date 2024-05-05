@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.composebowlingapp.ui.theme.ComposeBowlingAppTheme
 import com.example.composebowlingapp.views.DateFilter
+import com.example.composebowlingapp.views.DateType
 import com.example.composebowlingapp.views.FramesLoggedList
 import com.example.composebowlingapp.views.QuickFrameLogSection
 import com.example.composebowlingapp.views.QuickGameScoreLogged
@@ -74,7 +75,7 @@ class MainActivity : ComponentActivity() {
                         )
                         QuickFrameLogSection(state = state, onAction = viewModel::onAction)
                         QuickGameScoreLogged(onAction = viewModel::onAction)
-                        FramesLoggedList(frameList = frameDataListState, gameList = gameDataListState, onAction = viewModel::onAction)
+                        FramesLoggedList(frameList = viewModel.getFilteredList(), gameList = gameDataListState, onAction = viewModel::onAction)
                     }
                 }
             }

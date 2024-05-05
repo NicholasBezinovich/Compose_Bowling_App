@@ -22,6 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composebowlingapp.FrameLoggerActions
 
+enum class DateType {
+    TODAY, ALL, RANGE
+}
+
 @Composable
 fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
     Box(modifier = Modifier
@@ -35,7 +39,7 @@ fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
                     modifier = Modifier
                         .padding(15.dp, 15.dp, 15.dp, 0.dp)
                         .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
-                        .weight(1f)
+                        .weight(2f)
                         .height(50.dp),
                     shape = RoundedCornerShape(10.dp),
                     elevation = 15.dp
@@ -51,12 +55,11 @@ fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
                                 .weight(1f),
                             onClick =
                             {
-                                println("Today was Tapped")
+                                onAction(FrameLoggerActions.DateFilterChanged(DateType.RANGE))
                             }
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .weight(1f)
                                     .fillMaxSize()
                             ) {
                                 Text(
@@ -75,12 +78,34 @@ fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
                                 .weight(1f),
                             onClick =
                             {
-                                println("Today was Tapped")
+                                onAction(FrameLoggerActions.DateFilterChanged(DateType.ALL))
                             }
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .weight(1f)
+                                    .fillMaxSize()
+                            ) {
+                                Text(
+                                    "All",
+                                    color = Color.White,
+                                    fontSize = 15.sp,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                )
+                            }
+                        }
+                        TextButton(
+                            modifier = Modifier
+                                .background(Color.DarkGray)
+                                .align(Alignment.CenterVertically)
+                                .weight(1f),
+                            onClick =
+                            {
+                                onAction(FrameLoggerActions.DateFilterChanged(DateType.TODAY))
+                            }
+                        ) {
+                            Box(
+                                modifier = Modifier
                                     .fillMaxSize()
                             ) {
                                 Text(

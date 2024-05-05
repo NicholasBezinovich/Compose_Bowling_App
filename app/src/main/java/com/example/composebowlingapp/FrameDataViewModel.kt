@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.composebowlingapp.views.DateType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.count
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Date
 
 class FrameDataViewModel(
     private val frameDao: FrameDao,
@@ -27,6 +29,8 @@ class FrameDataViewModel(
     var listOfData = mutableStateListOf<FrameDataTable>()
         private set
     var listOfGames = mutableStateListOf<GameDataTable>()
+        private set
+    var dateType = DateType.TODAY
         private set
 
     var strikePercent: MutableState<Double> = mutableStateOf(0.0)
@@ -80,8 +84,37 @@ class FrameDataViewModel(
             is FrameLoggerActions.EnterGame -> enterGame(actions.gameScore)
             is FrameLoggerActions.DeleteLog -> deleteLog(actions.frame)
             is FrameLoggerActions.DeleteGame -> deleteGame(actions.game)
+            is FrameLoggerActions.DateFilterChanged -> dateSelected(actions.dateType)
         }
     }
+
+    private fun dateSelected(selected: DateType) {
+        dateType = selected
+        if (dateType == DateType.TODAY) {
+            println("Today was tapped")
+        } else if (dateType == DateType.ALL) {
+            println("All was tapped")
+        } else {
+            println("Ranged Filter was tapped")
+        }
+    }
+
+    fun getFilteredList() : List<FrameDataTable> {
+        when (dateType) {
+            DateType.TODAY -> {
+                return listOfData.filter {
+                    it.date == LocalDate.now().toString()
+                }
+            }
+            DateType.ALL -> {
+                return listOfData
+            }
+            DateType.RANGE -> {
+                return listOfData
+            }
+        }
+    }
+
     private fun enterTapped() {
         if (!state.strike &&
             !state.spare &&
