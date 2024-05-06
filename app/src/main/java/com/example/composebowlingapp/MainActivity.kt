@@ -52,8 +52,6 @@ class MainActivity : ComponentActivity() {
                     }
                 )
                 val state = viewModel.state
-                val gameState = viewModel.gameState
-                val frameDataListState = viewModel.listOfData
                 val gameDataListState = viewModel.listOfGames
 
                 Box(modifier = Modifier
@@ -75,7 +73,7 @@ class MainActivity : ComponentActivity() {
                         )
                         QuickFrameLogSection(state = state, onAction = viewModel::onAction)
                         QuickGameScoreLogged(onAction = viewModel::onAction)
-                        FramesLoggedList(frameList = viewModel.getFilteredList(), gameList = gameDataListState, onAction = viewModel::onAction)
+                        FramesLoggedList(frameList = viewModel.getFilteredList(), gameList = gameDataListState, onAction = viewModel::onAction, viewModel = viewModel)
                     }
                 }
             }
@@ -109,7 +107,7 @@ fun DefaultPreview() {
                 )
                 //QuickFrameLogSection(state = state, onAction = viewModel::onAction)
                 //QuickGameScoreLogged(gameState = gameState, onAction = viewModel::onAction)
-                FramesLoggedList(frameList = frameDataList, gameList = gameDateList)
+                //FramesLoggedList(frameList = frameDataList, gameList = gameDateList)
             }
         }
     }

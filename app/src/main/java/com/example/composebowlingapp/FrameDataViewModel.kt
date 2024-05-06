@@ -33,6 +33,10 @@ class FrameDataViewModel(
     var dateType = mutableStateOf(DateType.TODAY)
         //DateType.TODAY
         private set
+    var showFrameList = mutableStateOf(true)
+        private set
+    var showGameList = mutableStateOf(true)
+        private set
 
     var strikePercent: MutableState<Double> = mutableStateOf(0.0)
     var sparePercent: MutableState<Double> = mutableStateOf(0.0)
@@ -86,7 +90,17 @@ class FrameDataViewModel(
             is FrameLoggerActions.DeleteLog -> deleteLog(actions.frame)
             is FrameLoggerActions.DeleteGame -> deleteGame(actions.game)
             is FrameLoggerActions.DateFilterChanged -> dateSelected(actions.dateType)
+            is FrameLoggerActions.ToggleShowFrameList -> toggleShowFrames(actions.b)
+            is FrameLoggerActions.ToggleShowGameList -> toggleShowGames(actions.b)
         }
+    }
+
+    private fun toggleShowFrames(b: Boolean) {
+        showFrameList.value = b
+    }
+
+    private fun toggleShowGames(b: Boolean) {
+        showGameList.value = b
     }
 
     private fun dateSelected(selected: DateType) {
