@@ -38,6 +38,10 @@ class FrameDataViewModel(
     var showGameList = mutableStateOf(true)
         private set
 
+    var profiles: MutableList<String> = mutableListOf<String>()
+    var profile: MutableState<String> = mutableStateOf("Nick")
+    var profileTapped: MutableState<Boolean> = mutableStateOf(false)
+
     var strikePercent: MutableState<Double> = mutableStateOf(0.0)
     var sparePercent: MutableState<Double> = mutableStateOf(0.0)
     var openPercent: MutableState<Double> = mutableStateOf(0.0)
@@ -48,12 +52,22 @@ class FrameDataViewModel(
     }
 
     private fun fillInitalList() {
+        profiles.add(profile.value)
+        profiles.add("Moa")
+        profiles.add("Laura")
+        profiles.add("Jordan")
         viewModelScope.launch() {
             frameDao.getAllData().first().forEach {
                 listOfData.add(it)
+                if (!profiles.contains(it.profile)) {
+                    profiles.add(it.profile)
+                }
             }
             gameDao.getAllData().first().forEach {
                 listOfGames.add(it)
+                if (!profiles.contains(it.profile)) {
+                    profiles.add(it.profile)
+                }
             }
             setStatistics()
         }
@@ -92,9 +106,13 @@ class FrameDataViewModel(
             is FrameLoggerActions.DateFilterChanged -> dateSelected(actions.dateType)
             is FrameLoggerActions.ToggleShowFrameList -> toggleShowFrames(actions.b)
             is FrameLoggerActions.ToggleShowGameList -> toggleShowGames(actions.b)
+            is FrameLoggerActions.ProfileToggled -> toggleProfile()
         }
     }
 
+    private fun toggleProfile() {
+        profileTapped.value = !profileTapped.value
+    }
     private fun toggleShowFrames(b: Boolean) {
         showFrameList.value = b
     }
@@ -125,6 +143,7 @@ class FrameDataViewModel(
     }
 
     private fun enterTapped() {
+        state.profile = profile.value
         if (!state.strike &&
             !state.spare &&
             !state.pin1 &&
@@ -276,7 +295,7 @@ class FrameDataViewModel(
 
     private fun enterGame(gameScore: Int) {
         var gameData = GameDataTable(gameScore)
-
+        gameData.profile = profile.value
         //Update Database
         viewModelScope.launch {
             gameDao.insertGame(gameData)

@@ -8,13 +8,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +27,7 @@ import com.example.composebowlingapp.ui.theme.ComposeBowlingAppTheme
 import com.example.composebowlingapp.views.DateFilter
 import com.example.composebowlingapp.views.DateType
 import com.example.composebowlingapp.views.FramesLoggedList
+import com.example.composebowlingapp.views.ProfileSelectionView
 import com.example.composebowlingapp.views.QuickFrameLogSection
 import com.example.composebowlingapp.views.QuickGameScoreLogged
 import com.example.composebowlingapp.views.StatsSection
@@ -64,7 +69,17 @@ class MainActivity : ComponentActivity() {
                             .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        DateFilter(onAction = viewModel::onAction)
+                        Row(modifier = Modifier.defaultMinSize(minWidth = Dp.Infinity, minHeight = 70.dp)) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                ProfileSelectionView(
+                                    viewModel = viewModel,
+                                    onAction = viewModel::onAction
+                                )
+                            }
+                            Box(modifier = Modifier.weight(2f)) {
+                                DateFilter(onAction = viewModel::onAction)
+                            }
+                        }
                         StatsSection(
                             strikePercent = viewModel.strikePercent.value,
                             sparePercent = viewModel.sparePercent.value,

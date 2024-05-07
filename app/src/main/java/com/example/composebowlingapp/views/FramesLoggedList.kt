@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -53,7 +54,7 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                 modifier = Modifier
                     .padding(15.dp, 0.dp, 15.dp, 15.dp)
                     .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
-                    .height(40.dp)
+                    .defaultMinSize(minHeight = 40.dp)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 shape = RoundedCornerShape(10.dp),
@@ -131,6 +132,12 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                                 )
                                 {
                                     Text(
+                                        text = it.profile,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .align(Alignment.CenterHorizontally)
+                                    )
+                                    Text(
                                         text = it.date,
                                         modifier = Modifier
                                             .weight(1f)
@@ -200,7 +207,7 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                             modifier = Modifier
                                 .padding(15.dp, 0.dp, 15.dp, 15.dp)
                                 .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
-                                .height(100.dp),
+                                .height(125.dp),
                             shape = RoundedCornerShape(10.dp),
                             elevation = 15.dp
                         ) {
@@ -208,20 +215,39 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                                 modifier = Modifier
                                     .padding(15.dp, 15.dp, 15.dp, 15.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .weight(1f)
+                                Column(
+                                    modifier = Modifier.weight(1f)
                                 ) {
-                                    Text(
-                                        text = it.gameValue.toString(),
-                                        textAlign = TextAlign.Center,
-                                        fontSize = 40.sp,
+                                    Row(
                                         modifier = Modifier
-                                            .padding(0.dp)
                                             .fillMaxSize()
-                                            .align(CenterVertically)
-                                    )
+                                            .weight(1f)
+                                    ) {
+                                        Text(
+                                            text = it.profile,
+                                            textAlign = TextAlign.Center,
+                                            fontSize = 35.sp,
+                                            modifier = Modifier
+                                                .padding(0.dp)
+                                                .fillMaxSize()
+                                                .align(CenterVertically)
+                                        )
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .weight(1f)
+                                    ) {
+                                        Text(
+                                            text = it.gameValue.toString(),
+                                            textAlign = TextAlign.Center,
+                                            fontSize = 40.sp,
+                                            modifier = Modifier
+                                                .padding(0.dp)
+                                                .fillMaxSize()
+                                                .align(CenterVertically)
+                                        )
+                                    }
                                 }
                                 Column(
                                     modifier = Modifier
@@ -229,7 +255,7 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                                 )
                                 {
                                     Text(
-                                        text = "DATE",
+                                        text = it.date,
                                         textAlign = TextAlign.Center,
                                         fontSize = 15.sp,
                                         modifier = Modifier
