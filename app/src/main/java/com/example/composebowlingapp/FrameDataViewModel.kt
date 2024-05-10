@@ -17,8 +17,11 @@ import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +50,10 @@ class FrameDataViewModel(
     var profileTapped: MutableState<Boolean> = mutableStateOf(false)
 
     var showDatePicker: MutableState<Boolean> = mutableStateOf(false)
+    var dateFromDF: MutableState<LocalDate> = mutableStateOf(LocalDate.now())
+    var dateToDF: MutableState<LocalDate> = mutableStateOf(LocalDate.now())
+    var dateFrom: MutableState<String> = mutableStateOf("")
+    var dateTo: MutableState<String> = mutableStateOf("")
 
     var strikePercent: MutableState<Double> = mutableStateOf(0.0)
     var sparePercent: MutableState<Double> = mutableStateOf(0.0)
@@ -77,6 +84,14 @@ class FrameDataViewModel(
             }
             setStatistics()
         }
+    }
+
+    fun convertMillisToLocalDate(millis: Long) : LocalDate {
+        return Instant
+            .ofEpochMilli(millis)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+            .plusDays(1)
     }
 
     private fun updateFrameList() {
@@ -151,7 +166,9 @@ class FrameDataViewModel(
                 return listFromProfile
             }
             DateType.RANGE -> {
-                return listFromProfile
+                return listFromProfile.filter {
+                    it.date >= dateFrom.value && it.date <= dateTo.value
+                }
             }
         }
     }
@@ -170,7 +187,9 @@ class FrameDataViewModel(
                 return listFromProfile
             }
             DateType.RANGE -> {
-                return listFromProfile
+                return listFromProfile.filter {
+                    it.date >= dateFrom.value && it.date <= dateTo.value
+                }
             }
         }
     }
