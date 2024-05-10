@@ -21,6 +21,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Date
 
+@OptIn(ExperimentalMaterial3Api::class)
 class FrameDataViewModel(
     private val frameDao: FrameDao,
     private val gameDao: GameDao
@@ -44,6 +45,8 @@ class FrameDataViewModel(
     var profiles: MutableList<String> = mutableListOf<String>()
     var profile: MutableState<String> = mutableStateOf("Nick")
     var profileTapped: MutableState<Boolean> = mutableStateOf(false)
+
+    var showDatePicker: MutableState<Boolean> = mutableStateOf(false)
 
     var strikePercent: MutableState<Double> = mutableStateOf(0.0)
     var sparePercent: MutableState<Double> = mutableStateOf(0.0)
@@ -126,8 +129,13 @@ class FrameDataViewModel(
 
     private fun dateSelected(selected: DateType) {
         dateType.value = selected
+        if (selected == DateType.RANGE) {
+            showDatePicker.value = !showDatePicker.value
+        }
         setStatistics()
     }
+
+
 
     fun getFilteredList() : List<FrameDataTable> {
         var listFromProfile = listOfData.filter {
