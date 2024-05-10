@@ -2,6 +2,7 @@ package com.example.composebowlingapp.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -32,20 +34,18 @@ import com.example.composebowlingapp.FrameLoggerActions
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProfileSelectionView(viewModel: FrameDataViewModel, onAction: (FrameLoggerActions) -> Unit) {
-
     Box(
         modifier = Modifier
             .defaultMinSize(minWidth = 120.dp, minHeight = 50.dp)
             .background(Color.LightGray)
-            .padding(15.dp, 15.dp, 15.dp, 0.dp)
+            .padding(15.dp, 15.dp, 0.dp, 0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             Row {
-                Spacer(modifier = Modifier.weight(1f))
-                Column(modifier = Modifier.weight(2f)) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Card(
                         modifier = Modifier
                             .defaultMinSize(minWidth = 120.dp, minHeight = 50.dp)
@@ -57,38 +57,39 @@ fun ProfileSelectionView(viewModel: FrameDataViewModel, onAction: (FrameLoggerAc
                             onAction(FrameLoggerActions.ProfileToggled(b = true))
                         }
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Text(
-                                "Profile: " + viewModel.profile.value,
-                                fontSize = 15.sp,
+                        Column(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                            Row(
                                 modifier = Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .padding(10.dp, 5.dp, 5.dp, 5.dp)
-                            )
-                            Spacer(modifier = Modifier.defaultMinSize(minWidth = 10.dp))
-                            Text(
-                                text = if (viewModel.profileTapped.value) "v" else ">",
-                                fontSize = 20.sp,
-                                modifier = Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .padding(10.dp, 5.dp, 5.dp, 5.dp))
-                        }
-                        if (viewModel.profileTapped.value) {
-                            viewModel.profiles.forEach {
-                                Row(
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    "Profile: " + viewModel.profile.value,
+                                    fontSize = 15.sp,
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    Text(
-                                        "Profile: " + it,
-                                        fontSize = 15.sp,
+                                        .align(Alignment.CenterVertically)
+                                        .padding(10.dp, 5.dp, 5.dp, 5.dp)
+                                )
+                            }
+                            if (viewModel.profileTapped.value) {
+                                viewModel.profiles.forEach {
+                                    Divider(modifier = Modifier.height(1.dp))
+                                    Row(
                                         modifier = Modifier
-                                            .align(Alignment.CenterVertically)
-                                            .padding(10.dp, 5.dp, 5.dp, 5.dp)
-                                    )
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                viewModel.profile.value = it
+                                                viewModel.setStatistics()
+                                                onAction(FrameLoggerActions.ProfileToggled(b = true))
+                                            }
+                                    ) {
+                                        Text(
+                                            "Profile: " + it,
+                                            fontSize = 15.sp,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterVertically)
+                                                .padding(10.dp, 5.dp, 5.dp, 5.dp)
+                                        )
+                                    }
                                 }
                             }
                         }

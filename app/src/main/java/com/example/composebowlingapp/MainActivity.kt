@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -57,7 +59,6 @@ class MainActivity : ComponentActivity() {
                     }
                 )
                 val state = viewModel.state
-                val gameDataListState = viewModel.listOfGames
 
                 Box(modifier = Modifier
                     .fillMaxSize()
@@ -76,6 +77,7 @@ class MainActivity : ComponentActivity() {
                                     onAction = viewModel::onAction
                                 )
                             }
+                            Spacer(modifier = Modifier.width(10.dp))
                             Box(modifier = Modifier.weight(2f)) {
                                 DateFilter(onAction = viewModel::onAction)
                             }
@@ -88,7 +90,7 @@ class MainActivity : ComponentActivity() {
                         )
                         QuickFrameLogSection(state = state, onAction = viewModel::onAction)
                         QuickGameScoreLogged(onAction = viewModel::onAction)
-                        FramesLoggedList(frameList = viewModel.getFilteredList(), gameList = gameDataListState, onAction = viewModel::onAction, viewModel = viewModel)
+                        FramesLoggedList(frameList = viewModel.getFilteredList(), gameList = viewModel.filteredGameList(), onAction = viewModel::onAction, viewModel = viewModel)
                     }
                 }
             }

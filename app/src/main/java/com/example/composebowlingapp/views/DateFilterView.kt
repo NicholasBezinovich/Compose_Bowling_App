@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,13 +37,12 @@ fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
     ) {
         Column() {
             Row {
-                Spacer(modifier = Modifier.weight(1f))
                 Card(
                     modifier = Modifier
-                        .padding(15.dp, 15.dp, 15.dp, 0.dp)
+                        .padding(0.dp, 15.dp, 15.dp, 0.dp)
                         .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
-                        .weight(2f)
-                        .height(50.dp),
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = 50.dp),
                     shape = RoundedCornerShape(10.dp),
                     elevation = 15.dp
                 ) {

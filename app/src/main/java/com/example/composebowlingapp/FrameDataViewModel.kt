@@ -127,17 +127,39 @@ class FrameDataViewModel(
     }
 
     fun getFilteredList() : List<FrameDataTable> {
+        var listFromProfile = listOfData.filter {
+            it.profile == profile.value
+        }
         when (dateType.value) {
             DateType.TODAY -> {
-                return listOfData.filter {
+                return listFromProfile.filter {
                     it.date == LocalDate.now().toString()
                 }
             }
             DateType.ALL -> {
-                return listOfData
+                return listFromProfile
             }
             DateType.RANGE -> {
-                return listOfData
+                return listFromProfile
+            }
+        }
+    }
+
+    fun filteredGameList() : List<GameDataTable> {
+        var listFromProfile = listOfGames.filter {
+            it.profile == profile.value
+        }
+        when (dateType.value) {
+            DateType.TODAY -> {
+                return listFromProfile.filter {
+                    it.date == LocalDate.now().toString()
+                }
+            }
+            DateType.ALL -> {
+                return listFromProfile
+            }
+            DateType.RANGE -> {
+                return listFromProfile
             }
         }
     }
@@ -197,8 +219,6 @@ class FrameDataViewModel(
             listOfData.remove(frame)
             viewModelScope.launch {
                 println("Print Before Delete: " + frameDao.getAllData().first().count())
-                var copyDaoList = frameDao.getAllData().first()
-                var copyDaoFrame = copyDaoList.first { it.id == frame.id }
                 frameDao.deleteFrame(frameDao.getAllData().first().first { it.id == frame.id})
                 println("Print After Delete: " + frameDao.getAllData().first().count())
                 setStatistics()
@@ -255,14 +275,14 @@ class FrameDataViewModel(
         }
     }
 
-    private fun setStatistics() {
+    fun setStatistics() {
         //Get statistics values
         var totalEntries = getFilteredList().count()
         var totalSpares = 0
         var totalStrikes = 0
         var totalOpens = 0
         var totalPinFall = 0
-        var numberOfGames = listOfGames.count()
+        var numberOfGames = filteredGameList().count()
         getFilteredList().forEach {
             if (it.spare) {
                 totalSpares++
@@ -273,7 +293,7 @@ class FrameDataViewModel(
             }
         }
 
-        listOfGames.forEach {
+        filteredGameList().forEach {
             totalPinFall += it.gameValue
         }
 
