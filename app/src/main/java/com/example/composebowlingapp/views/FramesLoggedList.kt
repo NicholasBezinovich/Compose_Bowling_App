@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -49,20 +51,25 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
         .fillMaxWidth()
         .background(Color.LightGray)
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .background(Color.LightGray)) {
             Card(
                 modifier = Modifier
                     .padding(15.dp, 0.dp, 15.dp, 15.dp)
                     .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
-                    .defaultMinSize(minHeight = 40.dp)
+                    .height(40.dp)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 shape = RoundedCornerShape(10.dp),
                 elevation = 15.dp
             ) {
-                Button(onClick = {
-                    onAction(FrameLoggerActions.ToggleShowFrameList(b = !viewModel.showFrameList.value))
-                }) {
+                Button(
+                    onClick = {
+                        onAction(FrameLoggerActions.ToggleShowFrameList(b = !viewModel.showFrameList.value))
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.DarkGray)
+                ) {
                     Row(
                         modifier = Modifier
                             .weight(1f)
@@ -177,9 +184,12 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                 shape = RoundedCornerShape(10.dp),
                 elevation = 15.dp
             ) {
-                Button(onClick = {
-                    onAction(FrameLoggerActions.ToggleShowGameList(b = !viewModel.showGameList.value))
-                }) {
+                Button(
+                    onClick = {
+                        onAction(FrameLoggerActions.ToggleShowGameList(b = !viewModel.showGameList.value))
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.DarkGray)
+                ) {
                     Row(
                         modifier = Modifier
                             .weight(1f)

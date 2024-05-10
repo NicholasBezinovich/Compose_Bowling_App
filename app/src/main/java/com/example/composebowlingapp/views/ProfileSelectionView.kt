@@ -52,7 +52,6 @@ fun ProfileSelectionView(viewModel: FrameDataViewModel, onAction: (FrameLoggerAc
                             .border(1.dp, Color.Black, RoundedCornerShape(10.dp)),
                         elevation = 10.dp,
                         shape = RoundedCornerShape(15.dp),
-                        backgroundColor = Color.White,
                         onClick = {
                             onAction(FrameLoggerActions.ProfileToggled(b = true))
                         }
@@ -72,23 +71,27 @@ fun ProfileSelectionView(viewModel: FrameDataViewModel, onAction: (FrameLoggerAc
                             }
                             if (viewModel.profileTapped.value) {
                                 viewModel.profiles.forEach {
-                                    Divider(modifier = Modifier.height(1.dp))
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                viewModel.profile.value = it
-                                                viewModel.setStatistics()
-                                                onAction(FrameLoggerActions.ProfileToggled(b = true))
-                                            }
-                                    ) {
-                                        Text(
-                                            "Profile: " + it,
-                                            fontSize = 15.sp,
-                                            modifier = Modifier
-                                                .align(Alignment.CenterVertically)
-                                                .padding(10.dp, 5.dp, 5.dp, 5.dp)
+                                    if (it != viewModel.profile.value) {
+                                        Divider(
+                                            modifier = Modifier.height(1.dp).background(Color.Gray)
                                         )
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    viewModel.profile.value = it
+                                                    viewModel.setStatistics()
+                                                    onAction(FrameLoggerActions.ProfileToggled(b = true))
+                                                }
+                                        ) {
+                                            Text(
+                                                "Profile: " + it,
+                                                fontSize = 15.sp,
+                                                modifier = Modifier
+                                                    .align(Alignment.CenterVertically)
+                                                    .padding(10.dp, 5.dp, 5.dp, 5.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
