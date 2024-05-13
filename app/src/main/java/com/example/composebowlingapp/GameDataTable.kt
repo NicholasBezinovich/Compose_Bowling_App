@@ -9,6 +9,7 @@ data class GameDataTable(
     var gameValue: Int = 0,
     var date: String = LocalDate.now().toString(),
     var profile: String = "",
+    var tags: String = "",
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 )

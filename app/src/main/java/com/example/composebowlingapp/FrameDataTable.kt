@@ -20,6 +20,7 @@ data class FrameDataTable(
     var spare: Boolean = false,
     var date: String = LocalDate.now().toString(),
     var profile: String = "",
+    var tags: String = "",
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 )

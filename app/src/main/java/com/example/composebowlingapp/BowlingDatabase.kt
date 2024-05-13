@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
     entities = [
         FrameDataTable::class,
         GameDataTable::class],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class BowlingDatabase: RoomDatabase() {

@@ -30,6 +30,7 @@ import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.composebowlingapp.FrameLoggerActions
 import kotlinx.coroutines.launch
+import java.util.Date
 import androidx.compose.material3.DateRangePicker as DateRangePicker
 
 enum class DateType {
@@ -48,10 +50,22 @@ enum class DateType {
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
+fun DateFilter(dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
     var dark = isSystemInDarkTheme()
     var textColor = if (dark) {Color.White} else {Color.Black}
-    var rangeState = rememberDateRangePickerState()
+    var listOfDateTypes = arrayListOf(DateType.TODAY, DateType.ALL, DateType.RANGE)
+    var showDropDown = remember {mutableStateOf(false)}
+
+    fun getDateTypeText(dt: DateType) : String {
+        return if (dt == DateType.ALL) {
+            "All"
+        } else if (dt == DateType.TODAY) {
+            "Today"
+        } else {
+            "Range"
+        }
+    }
+
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color.LightGray)
@@ -67,85 +81,82 @@ fun DateFilter(onAction: (FrameLoggerActions) -> Unit) {
                     shape = RoundedCornerShape(10.dp),
                     elevation = 15.dp
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(0.dp)
-                    ) {
-                        TextButton(
+                    Column {
+                        Row(
                             modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .weight(1f),
-                            onClick =
-                            {
-                                onAction(FrameLoggerActions.DateFilterChanged(DateType.RANGE))
-                            }
+                                .fillMaxWidth()
+                                .padding(0.dp)
                         ) {
-                            Box(
+                            TextButton(
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .align(Alignment.CenterVertically)
+                                    .weight(1f),
+                                onClick =
+                                {
+                                    showDropDown.value = !showDropDown.value
+                                }
                             ) {
-                                Text(
-                                    "Filter",
-                                    color = textColor,
-                                    fontSize = 15.sp,
+                                Box(
                                     modifier = Modifier
-                                        .align(Alignment.Center)
-                                )
+                                        .fillMaxSize()
+                                ) {
+                                    Text(
+                                        getDateTypeText(dateType),
+                                        color = textColor,
+                                        fontSize = 15.sp,
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                    )
+                                }
                             }
                         }
-                        Divider(
-                            color = textColor,
-                            modifier = Modifier
-                                .width(1.dp)
-                        )
-                        TextButton(
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .weight(1f),
-                            onClick =
-                            {
-                                onAction(FrameLoggerActions.DateFilterChanged(DateType.ALL))
-                            }
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            ) {
-                                Text(
-                                    "All",
-                                    color = textColor,
-                                    fontSize = 15.sp,
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                )
-                            }
-                        }
-                        Divider(
-                            color = textColor,
-                            modifier = Modifier
-                                .width(1.dp)
-                        )
-                        TextButton(
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .weight(1f),
-                            onClick =
-                            {
-                                onAction(FrameLoggerActions.DateFilterChanged(DateType.TODAY))
-                            }
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            ) {
-                                Text(
-                                    "Today",
-                                    color = textColor,
-                                    fontSize = 15.sp,
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                )
+                        if (showDropDown.value) {
+                            listOfDateTypes.forEach {
+                                if (dateType != it) {
+                                    Row {
+                                        TextButton(
+                                            modifier = Modifier
+                                                .align(Alignment.CenterVertically)
+                                                .weight(1f),
+                                            onClick =
+                                            {
+                                                if (it == DateType.ALL) {
+                                                    onAction(
+                                                        FrameLoggerActions.DateFilterChanged(
+                                                            DateType.ALL
+                                                        )
+                                                    )
+                                                } else if (it == DateType.RANGE) {
+                                                    onAction(
+                                                        FrameLoggerActions.DateFilterChanged(
+                                                            DateType.RANGE
+                                                        )
+                                                    )
+                                                } else {
+                                                    onAction(
+                                                        FrameLoggerActions.DateFilterChanged(
+                                                            DateType.TODAY
+                                                        )
+                                                    )
+                                                }
+                                                showDropDown.value = !showDropDown.value
+                                            }
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                            ) {
+                                                Text(
+                                                    getDateTypeText(it),
+                                                    color = textColor,
+                                                    fontSize = 15.sp,
+                                                    modifier = Modifier
+                                                        .align(Alignment.Center)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
                             }
                             Spacer(modifier = Modifier.width(10.dp))
                             Box(modifier = Modifier.weight(2f)) {
-                                DateFilter(onAction = viewModel::onAction)
+                                DateFilter(dateType = viewModel.dateType.value, onAction = viewModel::onAction)
                             }
                         }
                         if (viewModel.showDatePicker.value) {
