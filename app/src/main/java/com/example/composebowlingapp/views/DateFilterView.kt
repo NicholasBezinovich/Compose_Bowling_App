@@ -55,6 +55,7 @@ fun DateFilter(dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
     var textColor = if (dark) {Color.White} else {Color.Black}
     var listOfDateTypes = arrayListOf(DateType.TODAY, DateType.ALL, DateType.RANGE)
     var showDropDown = remember {mutableStateOf(false)}
+    var showFilterDropDown = remember {mutableStateOf(false)}
 
     fun getDateTypeText(dt: DateType) : String {
         return if (dt == DateType.ALL) {
@@ -74,10 +75,11 @@ fun DateFilter(dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
             Row {
                 Card(
                     modifier = Modifier
-                        .padding(0.dp, 15.dp, 15.dp, 0.dp)
+                        .padding(0.dp, 15.dp, 0.dp, 0.dp)
                         .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
                         .fillMaxWidth()
-                        .defaultMinSize(minHeight = 50.dp),
+                        .defaultMinSize(minHeight = 50.dp)
+                        .weight(1f),
                     shape = RoundedCornerShape(10.dp),
                     elevation = 15.dp
                 ) {
@@ -89,8 +91,73 @@ fun DateFilter(dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
                         ) {
                             TextButton(
                                 modifier = Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .weight(1f),
+                                    .align(Alignment.CenterVertically),
+                                onClick =
+                                {
+                                    showFilterDropDown.value = !showFilterDropDown.value
+                                }
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                ) {
+                                    Text(
+                                        "Filter",
+                                        color = textColor,
+                                        fontSize = 15.sp,
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                    )
+                                }
+                            }
+                        }
+                        if (showFilterDropDown.value) {
+                            Row {
+                                TextButton(
+                                    modifier = Modifier
+                                        .align(Alignment.CenterVertically)
+                                        .weight(1f),
+                                    onClick =
+                                    {
+                                        showFilterDropDown.value = !showFilterDropDown.value
+                                    }
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                    ) {
+                                        Text(
+                                            "Add",
+                                            color = textColor,
+                                            fontSize = 15.sp,
+                                            modifier = Modifier
+                                                .align(Alignment.Center)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Card(
+                    modifier = Modifier
+                        .padding(0.dp, 15.dp, 15.dp, 0.dp)
+                        .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = 50.dp)
+                        .weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = 15.dp
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(0.dp)
+                        ) {
+                            TextButton(
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically),
                                 onClick =
                                 {
                                     showDropDown.value = !showDropDown.value

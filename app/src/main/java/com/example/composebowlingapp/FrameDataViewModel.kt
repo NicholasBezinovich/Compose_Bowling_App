@@ -49,6 +49,9 @@ class FrameDataViewModel(
     var profile: MutableState<String> = mutableStateOf("Nick")
     var profileTapped: MutableState<Boolean> = mutableStateOf(false)
 
+    var filters: MutableState<String> = mutableStateOf("Practice,Summer League")
+    var appliedFilters: MutableState<String> = mutableStateOf("Practice,Summer League")
+
     var showDatePicker: MutableState<Boolean> = mutableStateOf(false)
     var dateFromDF: MutableState<LocalDate> = mutableStateOf(LocalDate.now())
     var dateToDF: MutableState<LocalDate> = mutableStateOf(LocalDate.now())
@@ -116,6 +119,18 @@ class FrameDataViewModel(
         }
     }
 
+
+    fun removeAppliedFilterFromList(title: String) {
+        var filterList: List<String> = appliedFilters.value.split(",")
+        filterList = filterList.filter { it != title}
+        appliedFilters.value = filterList.joinToString(",")
+    }
+
+    fun returnAppliedListOfFilters(): List<String> {
+        var filterList: List<String> = appliedFilters.value.split(",")
+        return filterList
+    }
+
     fun onAction(actions: FrameLoggerActions) {
         when (actions) {
             is FrameLoggerActions.TappedPin -> pinTapped(actions.pin, actions.onState)
@@ -128,6 +143,7 @@ class FrameDataViewModel(
             is FrameLoggerActions.ToggleShowFrameList -> toggleShowFrames(actions.b)
             is FrameLoggerActions.ToggleShowGameList -> toggleShowGames(actions.b)
             is FrameLoggerActions.ProfileToggled -> toggleProfile()
+            is FrameLoggerActions.FilterRemoved -> removeAppliedFilterFromList(actions.title)
         }
     }
 
@@ -149,8 +165,6 @@ class FrameDataViewModel(
         }
         setStatistics()
     }
-
-
 
     fun getFilteredList() : List<FrameDataTable> {
         var listFromProfile = listOfData.filter {

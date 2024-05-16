@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -38,6 +40,7 @@ import androidx.room.Room
 import com.example.composebowlingapp.ui.theme.ComposeBowlingAppTheme
 import com.example.composebowlingapp.views.DateFilter
 import com.example.composebowlingapp.views.DateType
+import com.example.composebowlingapp.views.FilterBubble
 import com.example.composebowlingapp.views.FramesLoggedList
 import com.example.composebowlingapp.views.ProfileSelectionView
 import com.example.composebowlingapp.views.QuickFrameLogSection
@@ -141,6 +144,18 @@ class MainActivity : ComponentActivity() {
                                 }
                             ) {
                                 DateRangePicker(state = dateRangePickerState)
+                            }
+                        }
+                        if (viewModel.appliedFilters.value != "") {
+                            Row(
+                                modifier = Modifier
+                                    .padding(15.dp, 5.dp, 15.dp, 5.dp)
+                                    .horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            ) {
+                                viewModel.returnAppliedListOfFilters().forEach {
+                                    FilterBubble(it, deleteAction = viewModel::onAction)
+                                }
                             }
                         }
                         StatsSection(
