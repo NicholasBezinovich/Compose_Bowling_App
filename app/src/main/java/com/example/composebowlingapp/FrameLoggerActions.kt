@@ -13,5 +13,8 @@ sealed class FrameLoggerActions {
     data class ToggleShowGameList(val b: Boolean): FrameLoggerActions()
     data class ProfileToggled(val b: Boolean): FrameLoggerActions()
     data class FilterRemoved(val title: String): FrameLoggerActions()
+    data class AddToFilterList(val title: String): FrameLoggerActions()
+    data class AddToAppliedFilterList(val title: String): FrameLoggerActions()
+    data class RemoveFromAppliedFilterList(val title: String): FrameLoggerActions()
     object Enter: FrameLoggerActions()
 }

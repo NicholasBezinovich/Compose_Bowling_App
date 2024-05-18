@@ -131,6 +131,24 @@ class FrameDataViewModel(
         return filterList
     }
 
+    fun returnListOfFilters(): List<String> {
+        var filterList: List<String> = filters.value.split(",")
+        return filterList
+    }
+
+    fun addToFilterList(title: String) {
+        filters.value = filters.value+","+title
+    }
+    fun addToAppliedFilterList(title: String) {
+        var filterList: List<String> = appliedFilters.value.split(",")
+        var mutableFilterList  = mutableListOf<String>()
+        filterList.forEach {
+            mutableFilterList.add(it)
+        }
+        mutableFilterList.add(title)
+        appliedFilters.value = mutableFilterList.joinToString(",")
+    }
+
     fun onAction(actions: FrameLoggerActions) {
         when (actions) {
             is FrameLoggerActions.TappedPin -> pinTapped(actions.pin, actions.onState)
@@ -144,6 +162,9 @@ class FrameDataViewModel(
             is FrameLoggerActions.ToggleShowGameList -> toggleShowGames(actions.b)
             is FrameLoggerActions.ProfileToggled -> toggleProfile()
             is FrameLoggerActions.FilterRemoved -> removeAppliedFilterFromList(actions.title)
+            is FrameLoggerActions.AddToFilterList -> addToFilterList(actions.title)
+            is FrameLoggerActions.AddToAppliedFilterList -> addToAppliedFilterList(actions.title)
+            is FrameLoggerActions.RemoveFromAppliedFilterList -> removeAppliedFilterFromList(actions.title)
         }
     }
 

@@ -67,6 +67,50 @@ fun FilterBubble(title: String, deleteAction: (FrameLoggerActions) -> Unit) {
     }
 }
 
+@Composable
+fun AddRemoveFilterBubble(appliedFilters: List<String>, title: String, Action: (FrameLoggerActions) -> Unit) {
+    var dark = isSystemInDarkTheme()
+    var textColor = if (dark) {Color.White} else {Color.Black}
+    var backgroundColor = if (dark) {Color.DarkGray} else {Color.White}
+    Box(
+        modifier = Modifier
+            .defaultMinSize(minWidth = 15.dp, minHeight = 15.dp)
+            .background(backgroundColor, RoundedCornerShape(25.dp))
+            .clip(RoundedCornerShape(15.dp))
+    ) {
+        Row(modifier = Modifier.padding(5.dp)) {
+            Text(
+                title,
+                modifier = Modifier
+                    .padding(0.dp, 0.dp, 5.dp, 0.dp),
+                textAlign = TextAlign.Center,
+                color = textColor
+            )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+            ) {
+                Text(
+                    if (appliedFilters.contains(title)) {"-"} else {"+"},
+                    modifier = Modifier
+                        .clickable
+                        {
+                            if (appliedFilters.contains(title)) {
+                                //Remove from applied filters list
+                                Action(FrameLoggerActions.RemoveFromAppliedFilterList(title))
+                            } else {
+                                //Add to Applied filters list
+                                Action(FrameLoggerActions.AddToAppliedFilterList(title))
+                            }
+                        },
+                    textAlign = TextAlign.Center,
+                    color = textColor
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun FilterBubblePreview() {

@@ -1,5 +1,6 @@
 package com.example.composebowlingapp.views
 
+import android.widget.GridView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -22,6 +24,7 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DatePickerDefaults
@@ -50,12 +53,14 @@ enum class DateType {
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun DateFilter(dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
+fun DateFilter(listOfFilter: List<String>, appliedFilters: List<String>, dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
     var dark = isSystemInDarkTheme()
     var textColor = if (dark) {Color.White} else {Color.Black}
+    var backgroundColor = if (dark) {Color.Black} else {Color.White}
     var listOfDateTypes = arrayListOf(DateType.TODAY, DateType.ALL, DateType.RANGE)
     var showDropDown = remember {mutableStateOf(false)}
     var showFilterDropDown = remember {mutableStateOf(false)}
+    var addFilterValue = remember {mutableStateOf("")}
 
     fun getDateTypeText(dt: DateType) : String {
         return if (dt == DateType.ALL) {
@@ -72,7 +77,9 @@ fun DateFilter(dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
         .background(Color.LightGray)
     ) {
         Column {
-            Row {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
                 Card(
                     modifier = Modifier
                         .padding(0.dp, 15.dp, 0.dp, 0.dp)
@@ -112,30 +119,83 @@ fun DateFilter(dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
                             }
                         }
                         if (showFilterDropDown.value) {
-                            Row {
-                                TextButton(
-                                    modifier = Modifier
-                                        .align(Alignment.CenterVertically)
-                                        .weight(1f),
-                                    onClick =
-                                    {
-                                        showFilterDropDown.value = !showFilterDropDown.value
-                                    }
-                                ) {
+                            AlertDialog(
+                                onDismissRequest =
+                                {
+                                    showFilterDropDown.value = false
+                                },
+                                buttons =
+                                {
                                     Box(
                                         modifier = Modifier
-                                            .fillMaxSize()
+                                            .background(textColor)
+                                            .padding(15.dp)
                                     ) {
-                                        Text(
-                                            "Add",
-                                            color = textColor,
-                                            fontSize = 15.sp,
+                                        Column(
                                             modifier = Modifier
-                                                .align(Alignment.Center)
-                                        )
+                                                .padding(14.dp),
+                                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                                        ) {
+                                            Text("Add & Apply Filters", color = backgroundColor)
+
+                                            Row() {
+                                                TextField(
+                                                    modifier = Modifier
+                                                        .border(width = 1.dp, Color.Black)
+                                                        .weight(2f),
+                                                    value = addFilterValue.value,
+                                                    onValueChange = {addFilterValue.value = it},
+                                                    placeholder = {"Add Filter"}
+                                                )
+                                                TextButton(
+                                                    modifier = Modifier.weight(1f),
+                                                    onClick =
+                                                    {
+                                                        onAction(FrameLoggerActions.AddToFilterList(addFilterValue.value))
+                                                        addFilterValue.value = ""
+                                                    }
+                                                ) {
+                                                    Box {
+                                                        Text(
+                                                            "Add",
+                                                            color = backgroundColor,
+                                                            fontSize = 15.sp,
+                                                            modifier = Modifier
+                                                                .align(Alignment.Center)
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                                                listOfFilter.forEach {
+                                                    AddRemoveFilterBubble(appliedFilters = appliedFilters, title = it, Action = onAction)
+                                                }
+                                            }
+                                            Row(modifier = Modifier
+                                                .fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.End
+                                            ) {
+                                                TextButton(
+                                                    onClick =
+                                                    {
+
+                                                    }
+                                                ) {
+                                                    Box {
+                                                        Text(
+                                                            "Apply Filter",
+                                                            color = backgroundColor,
+                                                            fontSize = 15.sp,
+                                                            modifier = Modifier
+                                                                .align(Alignment.Center)
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            )
                         }
                     }
                 }
