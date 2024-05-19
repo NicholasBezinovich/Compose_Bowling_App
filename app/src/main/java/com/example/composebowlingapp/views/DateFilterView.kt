@@ -3,6 +3,7 @@ package com.example.composebowlingapp.views
 import android.widget.GridView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
@@ -20,6 +22,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
@@ -38,7 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -138,56 +143,58 @@ fun DateFilter(listOfFilter: List<String>, appliedFilters: List<String>, dateTyp
                                         ) {
                                             Text("Add & Apply Filters", color = backgroundColor)
 
-                                            Row() {
+                                            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                                                 TextField(
                                                     modifier = Modifier
                                                         .border(width = 1.dp, Color.Black)
                                                         .weight(2f),
                                                     value = addFilterValue.value,
                                                     onValueChange = {addFilterValue.value = it},
-                                                    placeholder = {"Add Filter"}
+                                                    placeholder = {"Add Filter"},
+                                                    textStyle = TextStyle(color = backgroundColor)
                                                 )
                                                 TextButton(
-                                                    modifier = Modifier.weight(1f),
+                                                    modifier = Modifier
+                                                        .weight(1f)
+                                                        .background(backgroundColor)
+                                                        .align(Alignment.CenterVertically)
+                                                        .clip(RoundedCornerShape(5.dp)),
                                                     onClick =
                                                     {
-                                                        onAction(FrameLoggerActions.AddToFilterList(addFilterValue.value))
-                                                        addFilterValue.value = ""
+                                                        if (addFilterValue.value.count() > 0 &&
+                                                            !appliedFilters.contains(addFilterValue.value)) {
+                                                            onAction(
+                                                                FrameLoggerActions.AddToFilterList(
+                                                                    addFilterValue.value
+                                                                )
+                                                            )
+                                                            addFilterValue.value = ""
+                                                        }
                                                     }
                                                 ) {
                                                     Box {
                                                         Text(
                                                             "Add",
-                                                            color = backgroundColor,
+                                                            color = textColor,
                                                             fontSize = 15.sp,
                                                             modifier = Modifier
                                                                 .align(Alignment.Center)
+                                                                .padding(5.dp)
                                                         )
                                                     }
                                                 }
                                             }
-                                            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                                                listOfFilter.forEach {
-                                                    AddRemoveFilterBubble(appliedFilters = appliedFilters, title = it, Action = onAction)
-                                                }
-                                            }
-                                            Row(modifier = Modifier
-                                                .fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.End
+                                            Row(
+                                                modifier = Modifier
+                                                    .horizontalScroll(rememberScrollState()),
+                                                horizontalArrangement = Arrangement.spacedBy(5.dp)
                                             ) {
-                                                TextButton(
-                                                    onClick =
-                                                    {
-
-                                                    }
-                                                ) {
-                                                    Box {
-                                                        Text(
-                                                            "Apply Filter",
-                                                            color = backgroundColor,
-                                                            fontSize = 15.sp,
-                                                            modifier = Modifier
-                                                                .align(Alignment.Center)
+                                                listOfFilter.forEach {
+                                                    if (it.count() > 0) {
+                                                        AddRemoveFilterBubble(
+                                                            appliedFilters = appliedFilters,
+                                                            title = it,
+                                                            Action = onAction
                                                         )
                                                     }
                                                 }

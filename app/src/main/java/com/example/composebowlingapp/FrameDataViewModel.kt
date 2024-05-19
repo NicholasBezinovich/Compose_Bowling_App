@@ -49,8 +49,8 @@ class FrameDataViewModel(
     var profile: MutableState<String> = mutableStateOf("Nick")
     var profileTapped: MutableState<Boolean> = mutableStateOf(false)
 
-    var filters: MutableState<String> = mutableStateOf("Practice,Summer League")
-    var appliedFilters: MutableState<String> = mutableStateOf("Practice,Summer League")
+    var filters: MutableState<String> = mutableStateOf("")
+    var appliedFilters: MutableState<String> = mutableStateOf("")
 
     var showDatePicker: MutableState<Boolean> = mutableStateOf(false)
     var dateFromDF: MutableState<LocalDate> = mutableStateOf(LocalDate.now())
@@ -77,6 +77,13 @@ class FrameDataViewModel(
                 listOfData.add(it)
                 if (!profiles.contains(it.profile)) {
                     profiles.add(it.profile)
+                }
+                if (it.tags.count() > 0) {
+                    it.tags.split(",").forEach {
+                        if (!filters.value.split(",").contains(it)) {
+                            addToFilterList(it)
+                        }
+                    }
                 }
             }
             gameDao.getAllData().first().forEach {
@@ -119,11 +126,11 @@ class FrameDataViewModel(
         }
     }
 
-
     fun removeAppliedFilterFromList(title: String) {
         var filterList: List<String> = appliedFilters.value.split(",")
         filterList = filterList.filter { it != title}
         appliedFilters.value = filterList.joinToString(",")
+        setStatistics()
     }
 
     fun returnAppliedListOfFilters(): List<String> {
@@ -143,10 +150,13 @@ class FrameDataViewModel(
         var filterList: List<String> = appliedFilters.value.split(",")
         var mutableFilterList  = mutableListOf<String>()
         filterList.forEach {
-            mutableFilterList.add(it)
+            if (it.count() > 0) {
+                mutableFilterList.add(it)
+            }
         }
         mutableFilterList.add(title)
         appliedFilters.value = mutableFilterList.joinToString(",")
+        setStatistics()
     }
 
     fun onAction(actions: FrameLoggerActions) {
@@ -187,21 +197,52 @@ class FrameDataViewModel(
         setStatistics()
     }
 
+
     fun getFilteredList() : List<FrameDataTable> {
         var listFromProfile = listOfData.filter {
             it.profile == profile.value
         }
+        var filterListFromProfile = mutableListOf<FrameDataTable>()
+        listFromProfile.forEach {
+            filterListFromProfile.add(it)
+        }
+        if (appliedFilters.value.count() > 0) {
+            var itemsToRemove = mutableListOf<FrameDataTable>()
+            filterListFromProfile.forEach {
+                if (it.tags.count() == 0) {
+                    itemsToRemove.add(it)
+                }
+            }
+            itemsToRemove.forEach {
+                filterListFromProfile.remove(it)
+            }
+            itemsToRemove.clear()
+            filterListFromProfile.forEach {
+                var containsATag = false
+                it.tags.split(",").forEach {
+                    if (appliedFilters.value.split(",").contains(it)) {
+                        containsATag = true
+                    }
+                }
+                if (!containsATag) {
+                    itemsToRemove.add(it)
+                }
+            }
+            itemsToRemove.forEach {
+                filterListFromProfile.remove(it)
+            }
+        }
         when (dateType.value) {
             DateType.TODAY -> {
-                return listFromProfile.filter {
+                return filterListFromProfile.filter {
                     it.date == LocalDate.now().toString()
                 }
             }
             DateType.ALL -> {
-                return listFromProfile
+                return filterListFromProfile
             }
             DateType.RANGE -> {
-                return listFromProfile.filter {
+                return filterListFromProfile.filter {
                     it.date >= dateFrom.value && it.date <= dateTo.value
                 }
             }
@@ -212,17 +253,47 @@ class FrameDataViewModel(
         var listFromProfile = listOfGames.filter {
             it.profile == profile.value
         }
+        var filterListFromProfile = mutableListOf<GameDataTable>()
+        listFromProfile.forEach {
+            filterListFromProfile.add(it)
+        }
+        if (appliedFilters.value.count() > 0) {
+            var itemsToRemove = mutableListOf<GameDataTable>()
+            filterListFromProfile.forEach {
+                if (it.tags.count() == 0) {
+                    itemsToRemove.add(it)
+                }
+            }
+            itemsToRemove.forEach {
+                filterListFromProfile.remove(it)
+            }
+            itemsToRemove.clear()
+            filterListFromProfile.forEach {
+                var containsATag = false
+                it.tags.split(",").forEach {
+                    if (appliedFilters.value.split(",").contains(it)) {
+                        containsATag = true
+                    }
+                }
+                if (!containsATag) {
+                    itemsToRemove.add(it)
+                }
+            }
+            itemsToRemove.forEach {
+                filterListFromProfile.remove(it)
+            }
+        }
         when (dateType.value) {
             DateType.TODAY -> {
-                return listFromProfile.filter {
+                return filterListFromProfile.filter {
                     it.date == LocalDate.now().toString()
                 }
             }
             DateType.ALL -> {
-                return listFromProfile
+                return filterListFromProfile
             }
             DateType.RANGE -> {
-                return listFromProfile.filter {
+                return filterListFromProfile.filter {
                     it.date >= dateFrom.value && it.date <= dateTo.value
                 }
             }
@@ -231,6 +302,7 @@ class FrameDataViewModel(
 
     private fun enterTapped() {
         state.profile = profile.value
+        state.tags = appliedFilters.value
         if (!state.strike &&
             !state.spare &&
             !state.pin1 &&
@@ -381,6 +453,7 @@ class FrameDataViewModel(
     private fun enterGame(gameScore: Int) {
         var gameData = GameDataTable(gameScore)
         gameData.profile = profile.value
+        gameData.tags = appliedFilters.value
         //Update Database
         viewModelScope.launch {
             gameDao.insertGame(gameData)

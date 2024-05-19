@@ -78,13 +78,26 @@ fun AddRemoveFilterBubble(appliedFilters: List<String>, title: String, Action: (
             .background(backgroundColor, RoundedCornerShape(25.dp))
             .clip(RoundedCornerShape(15.dp))
     ) {
-        Row(modifier = Modifier.padding(5.dp)) {
+        Row(
+            modifier = Modifier
+                .padding(5.dp)
+                .clickable {
+                    if (appliedFilters.contains(title)) {
+                        //Remove from applied filters list
+                        Action(FrameLoggerActions.RemoveFromAppliedFilterList(title))
+                    } else {
+                        //Add to Applied filters list
+                        Action(FrameLoggerActions.AddToAppliedFilterList(title))
+                    }
+                }
+        ) {
             Text(
                 title,
                 modifier = Modifier
                     .padding(0.dp, 0.dp, 5.dp, 0.dp),
                 textAlign = TextAlign.Center,
-                color = textColor
+                color = textColor,
+                fontSize = 20.sp
             )
             Box(
                 modifier = Modifier
@@ -92,19 +105,9 @@ fun AddRemoveFilterBubble(appliedFilters: List<String>, title: String, Action: (
             ) {
                 Text(
                     if (appliedFilters.contains(title)) {"-"} else {"+"},
-                    modifier = Modifier
-                        .clickable
-                        {
-                            if (appliedFilters.contains(title)) {
-                                //Remove from applied filters list
-                                Action(FrameLoggerActions.RemoveFromAppliedFilterList(title))
-                            } else {
-                                //Add to Applied filters list
-                                Action(FrameLoggerActions.AddToAppliedFilterList(title))
-                            }
-                        },
                     textAlign = TextAlign.Center,
-                    color = textColor
+                    color = textColor,
+                    fontSize = 20.sp
                 )
             }
         }
@@ -114,5 +117,10 @@ fun AddRemoveFilterBubble(appliedFilters: List<String>, title: String, Action: (
 @Preview
 @Composable
 fun FilterBubblePreview() {
-    FilterBubble(title = "Test", deleteAction = {})
+    Column {
+        FilterBubble(title = "Test", deleteAction = {})
+        AddRemoveFilterBubble(appliedFilters = mutableListOf<String>("Test"), title = "Test1") {
+
+        }
+    }
 }
