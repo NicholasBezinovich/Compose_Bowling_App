@@ -93,6 +93,13 @@ class FrameDataViewModel(
                 if (!profiles.contains(it.profile)) {
                     profiles.add(it.profile)
                 }
+                if (it.tags.count() > 0) {
+                    it.tags.split(",").forEach {
+                        if (!filters.value.split(",").contains(it)) {
+                            addToFilterList(it)
+                        }
+                    }
+                }
             }
             setStatistics()
         }
