@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
                         }
                         if (viewModel.showDatePicker.value) {
                             DatePickerDialog(
-                                onDismissRequest = {  },
+                                onDismissRequest = { viewModel.showDatePicker.value = false },
                                 confirmButton = {
                                     TextButton(
                                         onClick = {

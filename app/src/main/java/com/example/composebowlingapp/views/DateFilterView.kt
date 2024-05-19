@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
@@ -133,7 +134,6 @@ fun DateFilter(listOfFilter: List<String>, appliedFilters: List<String>, dateTyp
                                 {
                                     Box(
                                         modifier = Modifier
-                                            .background(textColor)
                                             .padding(15.dp)
                                     ) {
                                         Column(
@@ -141,24 +141,24 @@ fun DateFilter(listOfFilter: List<String>, appliedFilters: List<String>, dateTyp
                                                 .padding(14.dp),
                                             verticalArrangement = Arrangement.spacedBy(10.dp)
                                         ) {
-                                            Text("Add & Apply Filters", color = backgroundColor)
+                                            Text("Add & Apply Filters")
 
                                             Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                                                 TextField(
                                                     modifier = Modifier
-                                                        .border(width = 1.dp, Color.Black)
                                                         .weight(2f),
                                                     value = addFilterValue.value,
                                                     onValueChange = {addFilterValue.value = it},
                                                     placeholder = {"Add Filter"},
-                                                    textStyle = TextStyle(color = backgroundColor)
+                                                    label = { Text("Filter name") }
                                                 )
                                                 TextButton(
                                                     modifier = Modifier
+                                                        .padding(5.dp)
+                                                        .clip(CircleShape)
+                                                        .background(Color.DarkGray)
                                                         .weight(1f)
-                                                        .background(backgroundColor)
-                                                        .align(Alignment.CenterVertically)
-                                                        .clip(RoundedCornerShape(5.dp)),
+                                                        .align(Alignment.CenterVertically),
                                                     onClick =
                                                     {
                                                         if (addFilterValue.value.count() > 0 &&
@@ -172,16 +172,11 @@ fun DateFilter(listOfFilter: List<String>, appliedFilters: List<String>, dateTyp
                                                         }
                                                     }
                                                 ) {
-                                                    Box {
-                                                        Text(
-                                                            "Add",
-                                                            color = textColor,
-                                                            fontSize = 15.sp,
-                                                            modifier = Modifier
-                                                                .align(Alignment.Center)
-                                                                .padding(5.dp)
-                                                        )
-                                                    }
+                                                    Text(
+                                                        "Add",
+                                                        color = Color.White,
+                                                        fontSize = 10.sp
+                                                    )
                                                 }
                                             }
                                             Row(
@@ -227,6 +222,13 @@ fun DateFilter(listOfFilter: List<String>, appliedFilters: List<String>, dateTyp
                                     .align(Alignment.CenterVertically),
                                 onClick =
                                 {
+                                    if (dateType == DateType.RANGE && showDropDown.value) {
+                                        onAction(
+                                            FrameLoggerActions.DateFilterChanged(
+                                                DateType.RANGE
+                                            )
+                                        )
+                                    }
                                     showDropDown.value = !showDropDown.value
                                 }
                             ) {

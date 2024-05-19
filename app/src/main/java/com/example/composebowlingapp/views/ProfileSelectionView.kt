@@ -3,7 +3,9 @@ package com.example.composebowlingapp.views
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,9 +15,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -31,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,56 +68,76 @@ fun ProfileSelectionView(viewModel: FrameDataViewModel, onAction: (FrameLoggerAc
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .defaultMinSize(minHeight = 50.dp)
-                            .border(1.dp, Color.Black, RoundedCornerShape(10.dp)),
+                            .defaultMinSize(minHeight = 50.dp),
                         elevation = 10.dp,
-                        shape = RoundedCornerShape(15.dp),
+                        shape = RoundedCornerShape(10.dp),
                         onClick = {
                             showDialog.value = true
                         }
                     ) {
                         if (showDialog.value) {
-
-                            Dialog(onDismissRequest = {}) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
-                                ) {
-                                    Column {
-                                        TextField(
-                                            value = profileName.value,
-                                            onValueChange = { profileName.value = it },
-                                            label = { Text("EnterScore") }
-                                        )
-                                        TextButton(
+                            AlertDialog(
+                                onDismissRequest =
+                                {
+                                    showDialog.value = false
+                                },
+                                buttons =
+                                {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(15.dp)
+                                    ) {
+                                        Column(
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(20.dp)
-                                                .clip(CircleShape)
-                                                .background(Color.DarkGray),
-                                            onClick =
-                                            {
-                                                viewModel.profiles.add(profileName.value)
-                                                profileName.value = ""
-                                                showDialog.value = false
-                                            }
+                                                .padding(14.dp),
+                                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                                            horizontalAlignment = Alignment.Start
                                         ) {
                                             Text(
-                                                "Confirm",
-                                                color = Color.White,
-                                                fontSize = 10.sp
+                                                "Add Profile Name",
+                                                modifier = Modifier.padding(5.dp)
                                             )
+                                            TextField(
+                                                value = profileName.value,
+                                                onValueChange = { profileName.value = it },
+                                                label = { Text("Profile name") },
+                                                modifier = Modifier.padding(5.dp)
+                                            )
+                                            TextButton(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(5.dp)
+                                                    .clip(CircleShape)
+                                                    .background(Color.DarkGray),
+                                                onClick =
+                                                {
+                                                    if (profileName.value.count() != 0) {
+                                                        viewModel.profiles.add(profileName.value)
+                                                        profileName.value = ""
+                                                        showDialog.value = false
+                                                    }
+                                                }
+                                            ) {
+                                                Text(
+                                                    "Confirm",
+                                                    color = Color.White,
+                                                    fontSize = 10.sp
+                                                )
+                                            }
                                         }
                                     }
                                 }
-                            }
+                            )
                         }
-                        Column(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                        Column(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(50.dp)
+                                    .height(50.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
                                     "+",
@@ -135,7 +160,7 @@ fun ProfileSelectionView(viewModel: FrameDataViewModel, onAction: (FrameLoggerAc
                             .defaultMinSize(minWidth = 120.dp, minHeight = 50.dp)
                             .border(1.dp, Color.Black, RoundedCornerShape(10.dp)),
                         elevation = 10.dp,
-                        shape = RoundedCornerShape(15.dp),
+                        shape = RoundedCornerShape(10.dp),
                         onClick = {
                             onAction(FrameLoggerActions.ProfileToggled(b = true))
                         }
