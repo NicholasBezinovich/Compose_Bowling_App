@@ -46,6 +46,7 @@ import com.example.composebowlingapp.views.ProfileSelectionView
 import com.example.composebowlingapp.views.QuickFrameLogSection
 import com.example.composebowlingapp.views.QuickGameScoreLogged
 import com.example.composebowlingapp.views.StatsSection
+import java.lang.Long
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -98,6 +99,8 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.width(10.dp))
                             Box(modifier = Modifier.weight(2f)) {
                                 DateFilter(
+                                    dateFrom = viewModel.dateFrom.value,
+                                    dateTo = viewModel.dateTo.value,
                                     listOfFilter = viewModel.returnListOfFilters(),
                                     appliedFilters = viewModel.returnAppliedListOfFilters(),
                                     dateType = viewModel.dateType.value,
@@ -106,12 +109,34 @@ class MainActivity : ComponentActivity() {
                         }
                         if (viewModel.showDatePicker.value) {
                             DatePickerDialog(
-                                onDismissRequest = { viewModel.showDatePicker.value = false },
+                                onDismissRequest =
+                                {
+                                    if (dateRangePickerState.selectedStartDateMillis != null &&
+                                        dateRangePickerState.selectedEndDateMillis != null) {
+                                        println(
+                                            "Date From: " + viewModel.convertMillisToLocalDate(
+                                                millis = dateRangePickerState.selectedStartDateMillis!!
+                                            )
+                                        )
+                                        println(
+                                            "Date To: " + viewModel.convertMillisToLocalDate(
+                                                millis = dateRangePickerState.selectedEndDateMillis!!
+                                            )
+                                        )
+                                        viewModel.dateFromDF.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!)
+                                        viewModel.dateToDF.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!)
+                                        viewModel.dateFrom.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!).toString()
+                                        viewModel.dateTo.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!).toString()
+                                        viewModel.setStatistics()
+                                    }
+                                    viewModel.showDatePicker.value = false
+                                },
                                 confirmButton = {
                                     TextButton(
                                         onClick = {
                                             viewModel.onAction(FrameLoggerActions.DateFilterChanged(dateType = DateType.RANGE))
-                                            if (dateRangePickerState.selectedStartDateMillis != null) {
+                                            if (dateRangePickerState.selectedStartDateMillis != null &&
+                                                dateRangePickerState.selectedEndDateMillis != null) {
                                                 println(
                                                     "Date From: " + viewModel.convertMillisToLocalDate(
                                                         millis = dateRangePickerState.selectedStartDateMillis!!

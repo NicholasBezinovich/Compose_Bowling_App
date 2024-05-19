@@ -59,7 +59,7 @@ enum class DateType {
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun DateFilter(listOfFilter: List<String>, appliedFilters: List<String>, dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
+fun DateFilter(dateFrom: String, dateTo: String, listOfFilter: List<String>, appliedFilters: List<String>, dateType: DateType, onAction: (FrameLoggerActions) -> Unit) {
     var dark = isSystemInDarkTheme()
     var textColor = if (dark) {Color.White} else {Color.Black}
     var backgroundColor = if (dark) {Color.Black} else {Color.White}
@@ -74,7 +74,11 @@ fun DateFilter(listOfFilter: List<String>, appliedFilters: List<String>, dateTyp
         } else if (dt == DateType.TODAY) {
             "Today"
         } else {
-            "Range"
+            if (dateFrom != "" && dateTo != "") {
+                "Range: " + dateFrom + "-" + dateTo
+            } else {
+                "Range"
+            }
         }
     }
 
