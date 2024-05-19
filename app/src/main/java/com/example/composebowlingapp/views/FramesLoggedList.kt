@@ -2,6 +2,8 @@ package com.example.composebowlingapp.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,16 +17,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -48,6 +54,11 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                      gameList: List<GameDataTable>,
                      onAction: (FrameLoggerActions) -> Unit = {},
                      viewModel: FrameDataViewModel) {
+    var showFrameDetailsPopup = remember {mutableStateOf(false)}
+    var frameDataTapped = remember {mutableStateOf(FrameDataTable())}
+    var showGameDetailsPopup = remember {mutableStateOf(false)}
+    var gameDataTapped = remember {mutableStateOf(GameDataTable())}
+
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color.LightGray)
@@ -98,7 +109,12 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                             modifier = Modifier
                                 .padding(15.dp, 0.dp, 15.dp, 15.dp)
                                 .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
-                                .height(150.dp),
+                                .height(150.dp)
+                                .clickable
+                                {
+                                    frameDataTapped.value = it
+                                    showFrameDetailsPopup.value = true
+                                },
                             shape = RoundedCornerShape(10.dp),
                             elevation = 15.dp
                         ) {
@@ -172,6 +188,32 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                                 }
                             }
                         }
+                        if (showFrameDetailsPopup.value) {
+                            AlertDialog(
+                                onDismissRequest =
+                                {
+                                    showFrameDetailsPopup.value = false
+                                },
+                                buttons =
+                                {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(15.dp)
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(14.dp),
+                                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                                        ) {
+                                            Text("Frame Details")
+                                            Text("Profile: " + frameDataTapped.value.profile)
+                                            Text("Date: " + frameDataTapped.value.date)
+                                            Text("Tags: " + frameDataTapped.value.tags)
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -218,7 +260,12 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                             modifier = Modifier
                                 .padding(15.dp, 0.dp, 15.dp, 15.dp)
                                 .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
-                                .height(125.dp),
+                                .height(125.dp)
+                                .clickable
+                                {
+                                    gameDataTapped.value = it
+                                    showGameDetailsPopup.value = true
+                                },
                             shape = RoundedCornerShape(10.dp),
                             elevation = 15.dp
                         ) {
@@ -294,6 +341,33 @@ fun FramesLoggedList(frameList: List<FrameDataTable>,
                                     }
                                 }
                             }
+                        }
+                        if (showGameDetailsPopup.value) {
+                            AlertDialog(
+                                onDismissRequest =
+                                {
+                                    showGameDetailsPopup.value = false
+                                },
+                                buttons =
+                                {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(15.dp)
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(14.dp),
+                                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                                        ) {
+                                            Text("Game Details")
+                                            Text("Profile: " + gameDataTapped.value.profile)
+                                            Text("Date: " + gameDataTapped.value.date)
+                                            Text("Score: " + gameDataTapped.value.gameValue)
+                                            Text("Tags: " + gameDataTapped.value.tags)
+                                        }
+                                    }
+                                }
+                            )
                         }
                     }
                 }
