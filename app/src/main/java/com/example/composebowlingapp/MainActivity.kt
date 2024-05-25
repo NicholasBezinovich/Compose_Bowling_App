@@ -20,20 +20,26 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
@@ -76,131 +82,209 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 )
-                val state = viewModel.state
+
                 val dateRangePickerState = rememberDateRangePickerState()
+                val tabSelected = remember {mutableStateOf("HOME")}
 
                 Box(modifier = Modifier
                     .fillMaxSize()
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .background(Color.LightGray)
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Row(modifier = Modifier.defaultMinSize(minWidth = Dp.Infinity, minHeight = 70.dp)) {
-                            Box(modifier = Modifier.weight(1f)) {
-                                ProfileSelectionView(
-                                    viewModel = viewModel,
-                                    onAction = viewModel::onAction
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Box(modifier = Modifier.weight(2f)) {
-                                DateFilter(
-                                    dateFrom = viewModel.dateFrom.value,
-                                    dateTo = viewModel.dateTo.value,
-                                    listOfFilter = viewModel.returnListOfFilters(),
-                                    appliedFilters = viewModel.returnAppliedListOfFilters(),
-                                    dateType = viewModel.dateType.value,
-                                    onAction = viewModel::onAction)
-                            }
-                        }
-                        if (viewModel.showDatePicker.value) {
-                            DatePickerDialog(
-                                onDismissRequest =
-                                {
-                                    if (dateRangePickerState.selectedStartDateMillis != null &&
-                                        dateRangePickerState.selectedEndDateMillis != null) {
-                                        println(
-                                            "Date From: " + viewModel.convertMillisToLocalDate(
-                                                millis = dateRangePickerState.selectedStartDateMillis!!
-                                            )
+                    Column {
+                        Column (
+                            modifier = Modifier
+                                .background(Color.LightGray)
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                                .weight(10f),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            if (tabSelected.value == "HOME") {
+                                HomeView(viewModel)
+                            } else {
+                                Row(modifier = Modifier.defaultMinSize(minWidth = Dp.Infinity, minHeight = 70.dp)) {
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        ProfileSelectionView(
+                                            viewModel = viewModel,
+                                            onAction = viewModel::onAction
                                         )
-                                        println(
-                                            "Date To: " + viewModel.convertMillisToLocalDate(
-                                                millis = dateRangePickerState.selectedEndDateMillis!!
-                                            )
-                                        )
-                                        viewModel.dateFromDF.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!)
-                                        viewModel.dateToDF.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!)
-                                        viewModel.dateFrom.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!).toString()
-                                        viewModel.dateTo.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!).toString()
-                                        viewModel.setStatistics()
                                     }
-                                    viewModel.showDatePicker.value = false
-                                },
-                                confirmButton = {
-                                    TextButton(
-                                        onClick = {
-                                            viewModel.onAction(FrameLoggerActions.DateFilterChanged(dateType = DateType.RANGE))
-                                            if (dateRangePickerState.selectedStartDateMillis != null &&
-                                                dateRangePickerState.selectedEndDateMillis != null) {
-                                                println(
-                                                    "Date From: " + viewModel.convertMillisToLocalDate(
-                                                        millis = dateRangePickerState.selectedStartDateMillis!!
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Box(modifier = Modifier.weight(2f)) {
+                                        DateFilter(
+                                            dateFrom = viewModel.dateFrom.value,
+                                            dateTo = viewModel.dateTo.value,
+                                            listOfFilter = viewModel.returnListOfFilters(),
+                                            appliedFilters = viewModel.returnAppliedListOfFilters(),
+                                            dateType = viewModel.dateType.value,
+                                            onAction = viewModel::onAction)
+                                    }
+                                }
+                            }
+                            if (viewModel.showDatePicker.value) {
+                                DatePickerDialog(
+                                    onDismissRequest =
+                                    {
+                                        if (dateRangePickerState.selectedStartDateMillis != null &&
+                                            dateRangePickerState.selectedEndDateMillis != null
+                                        ) {
+                                            println(
+                                                "Date From: " + viewModel.convertMillisToLocalDate(
+                                                    millis = dateRangePickerState.selectedStartDateMillis!!
+                                                )
+                                            )
+                                            println(
+                                                "Date To: " + viewModel.convertMillisToLocalDate(
+                                                    millis = dateRangePickerState.selectedEndDateMillis!!
+                                                )
+                                            )
+                                            viewModel.dateFromDF.value =
+                                                viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!)
+                                            viewModel.dateToDF.value =
+                                                viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!)
+                                            viewModel.dateFrom.value =
+                                                viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!)
+                                                    .toString()
+                                            viewModel.dateTo.value =
+                                                viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!)
+                                                    .toString()
+                                            viewModel.setStatistics()
+                                        }
+                                        viewModel.showDatePicker.value = false
+                                    },
+                                    confirmButton = {
+                                        TextButton(
+                                            onClick = {
+                                                viewModel.onAction(
+                                                    FrameLoggerActions.DateFilterChanged(
+                                                        dateType = DateType.RANGE
                                                     )
                                                 )
-                                                println(
-                                                    "Date To: " + viewModel.convertMillisToLocalDate(
-                                                        millis = dateRangePickerState.selectedEndDateMillis!!
+                                                if (dateRangePickerState.selectedStartDateMillis != null &&
+                                                    dateRangePickerState.selectedEndDateMillis != null
+                                                ) {
+                                                    println(
+                                                        "Date From: " + viewModel.convertMillisToLocalDate(
+                                                            millis = dateRangePickerState.selectedStartDateMillis!!
+                                                        )
                                                     )
-                                                )
-                                                viewModel.dateFromDF.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!)
-                                                viewModel.dateToDF.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!)
-                                                viewModel.dateFrom.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!).toString()
-                                                viewModel.dateTo.value = viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!).toString()
-                                                viewModel.setStatistics()
+                                                    println(
+                                                        "Date To: " + viewModel.convertMillisToLocalDate(
+                                                            millis = dateRangePickerState.selectedEndDateMillis!!
+                                                        )
+                                                    )
+                                                    viewModel.dateFromDF.value =
+                                                        viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!)
+                                                    viewModel.dateToDF.value =
+                                                        viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!)
+                                                    viewModel.dateFrom.value =
+                                                        viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedStartDateMillis!!)
+                                                            .toString()
+                                                    viewModel.dateTo.value =
+                                                        viewModel.convertMillisToLocalDate(millis = dateRangePickerState.selectedEndDateMillis!!)
+                                                            .toString()
+                                                    viewModel.setStatistics()
+                                                }
                                             }
+                                        ) {
+                                            Text(
+                                                "Confirm"
+                                            )
                                         }
-                                    ) {
-                                        Text(
-                                            "Confirm"
-                                        )
-                                    }
-                                },
-                                dismissButton = {
-                                    TextButton(
-                                        onClick = {
-                                            viewModel.onAction(FrameLoggerActions.DateFilterChanged(dateType = DateType.RANGE))
+                                    },
+                                    dismissButton = {
+                                        TextButton(
+                                            onClick = {
+                                                viewModel.onAction(
+                                                    FrameLoggerActions.DateFilterChanged(
+                                                        dateType = DateType.RANGE
+                                                    )
+                                                )
+                                            }
+                                        ) {
+                                            Text(
+                                                "Dismiss"
+                                            )
                                         }
-                                    ) {
-                                        Text(
-                                            "Dismiss"
-                                        )
                                     }
-                                }
-                            ) {
-                                DateRangePicker(state = dateRangePickerState)
-                            }
-                        }
-                        if (viewModel.appliedFilters.value != "") {
-                            Row(
-                                modifier = Modifier
-                                    .padding(15.dp, 5.dp, 15.dp, 5.dp)
-                                    .horizontalScroll(rememberScrollState()),
-                                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                            ) {
-                                viewModel.returnAppliedListOfFilters().forEach {
-                                    FilterBubble(it, deleteAction = viewModel::onAction)
+                                ) {
+                                    DateRangePicker(state = dateRangePickerState)
                                 }
                             }
                         }
-                        StatsSection(
-                            strikePercent = viewModel.strikePercent.value,
-                            sparePercent = viewModel.sparePercent.value,
-                            openPercent = viewModel.openPercent.value,
-                            averageScore = viewModel.averageGame.value
-                        )
-                        QuickFrameLogSection(state = state, onAction = viewModel::onAction)
-                        QuickGameScoreLogged(onAction = viewModel::onAction)
-                        FramesLoggedList(frameList = viewModel.getFilteredList(), gameList = viewModel.filteredGameList(), onAction = viewModel::onAction, viewModel = viewModel)
+                        //Bottom Tab Bar
+                        BottomAppBar(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .fillMaxWidth()
+                                .weight(1f)
+                        ) {
+                            TextButton(
+                                modifier = Modifier.weight(1f),
+                                onClick = {
+                                    tabSelected.value = "HOME"
+                                }) {
+                                Text("HOME")
+                            }
+                            TextButton(
+                                modifier = Modifier.weight(1f),
+                                onClick = {
+                                    tabSelected.value = "ENTER GAME"
+                                }) {
+                                Text("ENTER GAME")
+                            }
+                        }
                     }
                 }
             }
         }
     }
+}
+
+
+@Composable
+fun HomeView(viewModel: FrameDataViewModel) {
+
+    val state = viewModel.state
+    Row(modifier = Modifier.defaultMinSize(minWidth = Dp.Infinity, minHeight = 70.dp)) {
+        Box(modifier = Modifier.weight(1f)) {
+            ProfileSelectionView(
+                viewModel = viewModel,
+                onAction = viewModel::onAction
+            )
+        }
+        Spacer(modifier = Modifier.width(10.dp))
+        Box(modifier = Modifier.weight(2f)) {
+            DateFilter(
+                dateFrom = viewModel.dateFrom.value,
+                dateTo = viewModel.dateTo.value,
+                listOfFilter = viewModel.returnListOfFilters(),
+                appliedFilters = viewModel.returnAppliedListOfFilters(),
+                dateType = viewModel.dateType.value,
+                onAction = viewModel::onAction)
+        }
+    }
+
+    if (viewModel.appliedFilters.value != "") {
+        Row(
+            modifier = Modifier
+                .padding(15.dp, 5.dp, 15.dp, 5.dp)
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+        ) {
+            viewModel.returnAppliedListOfFilters().forEach {
+                FilterBubble(it, deleteAction = viewModel::onAction)
+            }
+        }
+    }
+    StatsSection(
+        strikePercent = viewModel.strikePercent.value,
+        sparePercent = viewModel.sparePercent.value,
+        openPercent = viewModel.openPercent.value,
+        averageScore = viewModel.averageGame.value
+    )
+    QuickFrameLogSection(state = state, onAction = viewModel::onAction)
+    QuickGameScoreLogged(onAction = viewModel::onAction)
+    FramesLoggedList(frameList = viewModel.getFilteredList(), gameList = viewModel.filteredGameList(), onAction = viewModel::onAction, viewModel = viewModel)
 }
 
 @Preview
