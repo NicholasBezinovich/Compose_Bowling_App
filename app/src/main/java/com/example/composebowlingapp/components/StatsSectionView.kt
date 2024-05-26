@@ -1,4 +1,4 @@
-package com.example.composebowlingapp.views
+package com.example.composebowlingapp.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

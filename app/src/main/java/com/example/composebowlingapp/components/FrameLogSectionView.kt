@@ -1,4 +1,4 @@
-package com.example.composebowlingapp.views
+package com.example.composebowlingapp.components
 
 import com.example.composebowlingapp.FrameDataTable
 import androidx.compose.foundation.background

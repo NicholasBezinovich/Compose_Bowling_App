@@ -1,6 +1,6 @@
 package com.example.composebowlingapp
 
-import com.example.composebowlingapp.views.DateType
+import com.example.composebowlingapp.components.DateType
 
 sealed class FrameLoggerActions {
     data class TappedPin(val pin: String, val onState: Boolean): FrameLoggerActions()
