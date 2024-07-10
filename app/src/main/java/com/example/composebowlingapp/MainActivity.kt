@@ -47,6 +47,7 @@ import com.example.composebowlingapp.components.ProfileSelectionView
 import com.example.composebowlingapp.components.QuickFrameLogSection
 import com.example.composebowlingapp.components.QuickGameScoreLogged
 import com.example.composebowlingapp.components.StatsSection
+import com.example.composebowlingapp.views.FullGameLoggerView
 import com.example.composebowlingapp.views.HomeView
 
 class MainActivity : ComponentActivity() {
@@ -110,6 +111,9 @@ class MainActivity : ComponentActivity() {
                                             dateType = viewModel.dateType.value,
                                             onAction = viewModel::onAction)
                                     }
+                                }
+                                FullGameLoggerView {
+
                                 }
                             }
                             if (viewModel.showDatePicker.value) {

@@ -46,38 +46,42 @@ fun FullGameLoggerView(onAction: (FrameLoggerActions) -> Unit) {
                 .padding(16.dp)
                 .fillMaxWidth()
                 .background(backgroundColor)) {
-            Text("Profile: Nick")
-            Row {
-                fullGameList.forEach() {
-                    Box(
-                        modifier = Modifier
-                            .border(1.dp, Color.Black)
-                            .weight(1f)
-                    ) {
-                        Column() {
-                            Row {
-                                Text(
-                                    "5",
-                                    modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .border(1.dp, Color.Black)
-                                        .align(Alignment.CenterVertically)
-                                        .weight(1f)
-                                ) {
+            Column {
+                Text("Profile: Nick")
+                Row {
+                    fullGameList.forEach() {
+                        Row(modifier = Modifier.weight(1f)) {
+                            Box(
+                                modifier = Modifier
+                                    .border(1.dp, Color.Black)
+                                    .weight(1f)
+                            ) {
+                                Column() {
                                     Row {
                                         Text(
-                                            "/",
+                                            "5",
                                             modifier = Modifier.weight(1f),
                                             textAlign = TextAlign.Center
                                         )
+                                        Box(
+                                            modifier = Modifier
+                                                .border(1.dp, Color.Black)
+                                                .align(Alignment.CenterVertically)
+                                                .weight(1f)
+                                        ) {
+                                            Row {
+                                                Text(
+                                                    "/",
+                                                    modifier = Modifier.weight(1f),
+                                                    textAlign = TextAlign.Center
+                                                )
+                                            }
+                                        }
+                                    }
+                                    Row {
+                                        Text("10")
                                     }
                                 }
-                            }
-                            Row {
-                                Text("10")
                             }
                         }
                     }
