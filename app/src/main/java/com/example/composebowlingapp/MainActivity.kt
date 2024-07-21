@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -76,6 +77,8 @@ class MainActivity : ComponentActivity() {
                     }
                 )
 
+                val fullGameViewModel = FullGameLoggerViewModel()
+
                 val dateRangePickerState = rememberDateRangePickerState()
                 val tabSelected = remember {mutableStateOf("HOME")}
 
@@ -94,27 +97,10 @@ class MainActivity : ComponentActivity() {
                             if (tabSelected.value == "HOME") {
                                 HomeView(viewModel)
                             } else {
-                                Row(modifier = Modifier.defaultMinSize(minWidth = Dp.Infinity, minHeight = 70.dp)) {
-                                    Box(modifier = Modifier.weight(1f)) {
-                                        ProfileSelectionView(
-                                            viewModel = viewModel,
-                                            onAction = viewModel::onAction
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Box(modifier = Modifier.weight(2f)) {
-                                        DateFilter(
-                                            dateFrom = viewModel.dateFrom.value,
-                                            dateTo = viewModel.dateTo.value,
-                                            listOfFilter = viewModel.returnListOfFilters(),
-                                            appliedFilters = viewModel.returnAppliedListOfFilters(),
-                                            dateType = viewModel.dateType.value,
-                                            onAction = viewModel::onAction)
-                                    }
-                                }
-                                FullGameLoggerView {
-
-                                }
+                                FullGameLoggerView(
+                                    onAction = fullGameViewModel::onAction,
+                                    listOfGames = fullGameViewModel.fullGamesList
+                                )
                             }
                             if (viewModel.showDatePicker.value) {
                                 DatePickerDialog(
@@ -254,15 +240,16 @@ fun DefaultPreview() {
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 //DateFilter()
-                StatsSection(
+                /*StatsSection(
                     strikePercent = 0.0,
                     sparePercent = 0.0,
                     openPercent = 0.0,
                     averageScore = 0.0
-                )
+                )*/
                 //QuickFrameLogSection(state = state, onAction = viewModel::onAction)
                 //QuickGameScoreLogged(gameState = gameState, onAction = viewModel::onAction)
                 //FramesLoggedList(frameList = frameDataList, gameList = gameDateList)
+                FullGameLoggerView(onAction = {}, listOfGames = mutableListOf<MutableList<String>>())
             }
         }
     }
